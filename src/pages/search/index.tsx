@@ -1,7 +1,7 @@
 //import { Button } from 'shared/ui'
-import styles from './home.module.scss';
+import styles from './search.module.scss';
 
-const HomePage = () => {
+const SearchPage = () => {
   return (
     <div className={styles.container}>
       Домашняя страница
@@ -9,4 +9,4 @@ const HomePage = () => {
   )
 }
 
-export default HomePage
+export default SearchPage

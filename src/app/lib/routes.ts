@@ -1,4 +1,4 @@
 export const PageRoutes = {
-  editor: '/editor',
+  search: '/search',
   notFound: '*',
 }
