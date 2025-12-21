@@ -78,17 +78,17 @@ const ToastContainer: React.FC<Props> = ({
             onMouseEnter={() => handleMouseEnter(toast.id)}
             onMouseLeave={() => handleMouseLeave(toast.id)}
           >
-            <span className={styles.message}>{toast.message}</span>
-            <button
-              className={styles.closeBtn}
-              onClick={(e) => {
-                e.stopPropagation()
-                handleRemove(toast.id)
-              }}
-              aria-label="Закрыть"
-            >
-              ×
-            </button>
+            <div className={styles.content}>
+              <div className={styles.iconWrapper}>
+                <span className={styles.icon}>
+                  {toast.type === 'success' && '✓'}
+                  {toast.type === 'error' && '✕'}
+                  {toast.type === 'warning' && '!'}
+                  {toast.type === 'info' && 'i'}
+                </span>
+              </div>
+              <span className={styles.message}>{toast.message}</span>
+            </div>
 
             <div className={styles.progressBar}>
               <div

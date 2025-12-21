@@ -2,8 +2,8 @@
   display: flex;
   flex-direction: column;
   gap: 4px;
-  width: 232px;
-  height: 28px;
+  width: 270px;
+  height: 32px;
 }
 
 .inputField {
@@ -13,10 +13,10 @@
   padding: 0px 16px;
   border: 1px solid #202020;
   border-radius: 8px;
-  font-size: 12px;
+  font-size: 14px;
   transition: all 0.2s ease;
   background: #111213;
-  line-height: 28px;
+  line-height: 32px;
 
   &:focus {
     outline: none;
