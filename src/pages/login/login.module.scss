@@ -1,88 +1,87 @@
 body {
-    background-color: #0A0A0A;
-    color: #FFFFFF;
-    font-family: 'Inter';
+  background-color: #0a0a0a;
+  color: #ffffff;
+  font-family: 'Inter';
 }
 
 .container {
-    width: 650px;
-    height: 400;
-    transform: translate(calc(50vw - 325px), calc(50vh - 225px));
+  width: 650px;
+  height: 400;
 }
 
 .text {
-    color: #1AB6A9;
-    font-size: 96px;
-    font-weight: bold;
-    width: 650px;
-    text-align: center;
+  color: #1ab6a9;
+  font-size: 96px;
+  font-weight: bold;
+  width: 650px;
+  text-align: center;
 }
 
 .subtext {
-    color: #8C8D90;
-    font-size: 18px;
-    font-weight: normal;
-    width: 650px;
-    text-align: center;
+  color: #8c8d90;
+  font-size: 18px;
+  font-weight: normal;
+  width: 650px;
+  text-align: center;
 }
 
 .rat {
-    width: 200px;
-    height: 200px;
-    transform: translateX(calc(325px - 100px));
+  width: 200px;
+  height: 200px;
+  transform: translateX(calc(325px - 100px));
 }
 
 .button {
-    width: 126px;
-    height: 32px;
-    background-color: #1AB6A9;
-    border-radius: 8px;
-    text-align: center;
-    line-height: 32px;
-    color: #000000;
-    font-family: 'Montserrat';
-    font-weight: 600;
-    font-size: 12px;
-    margin-top: 22px;
-    margin-left: calc(325px - 63px);
+  width: 126px;
+  height: 32px;
+  background-color: #1ab6a9;
+  border-radius: 8px;
+  text-align: center;
+  line-height: 32px;
+  color: #000000;
+  font-family: 'Montserrat';
+  font-weight: 600;
+  font-size: 12px;
+  margin-top: 22px;
+  margin-left: calc(325px - 63px);
 }
 
 .card {
-    margin-top: 46px;
-    margin-left: calc(325px - 154px);
-    width: 308px;
-    height: 113px;
-    background-color: #111213;
-    border: 1px solid #202020;
-    border-radius: 15px;
+  margin-top: 46px;
+  margin-left: calc(325px - 154px);
+  width: 308px;
+  height: 113px;
+  background-color: #111213;
+  border: 1px solid #202020;
+  border-radius: 15px;
 }
 
 .cardIcon {
-    width: 18.5px;
-    height: 18px;
-    display: inline;
+  width: 18.5px;
+  height: 18px;
+  display: inline;
 }
 
 .cardTitleLine {
-    margin-top: 11px;
-    margin-left: 9px;
-    width: 200px;
+  margin-top: 11px;
+  margin-left: 9px;
+  width: 200px;
 }
 
 .cardTitle {
-    font-family: 'Montserrat';
-    font-size: 12px;
-    font-weight: 600;
-    display: inline-flex;
-    transform: translateY(-5px);
-    margin-left: 7px;
+  font-family: 'Montserrat';
+  font-size: 12px;
+  font-weight: 600;
+  display: inline-flex;
+  transform: translateY(-5px);
+  margin-left: 7px;
 }
 
 .cardText {
-    margin-top: 5px;
-    margin-left: 17px;
-    width: 270px;
-    font-family: 'Montserrat';
-    font-size: 10px;
-    font-weight: 500;
+  margin-top: 5px;
+  margin-left: 17px;
+  width: 270px;
+  font-family: 'Montserrat';
+  font-size: 10px;
+  font-weight: 500;
 }

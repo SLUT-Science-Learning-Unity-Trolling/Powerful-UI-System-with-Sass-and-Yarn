@@ -1,0 +1,41 @@
+.validatedInput {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  width: 232px;
+  height: 28px;
+}
+
+.inputField {
+  font-family: 'Montserrat';
+  font-weight: 500;
+  color: #ffffff;
+  padding: 0px 16px;
+  border: 1px solid #202020;
+  border-radius: 8px;
+  font-size: 12px;
+  transition: all 0.2s ease;
+  background: #111213;
+  line-height: 28px;
+
+  &:focus {
+    outline: none;
+    border-color: #1ab6a9;
+    box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+  }
+
+  &::placeholder {
+    color: #676767;
+  }
+}
+
+.inputError {
+  border-color: #ef4444;
+}
+
+.errorMessage {
+  color: #ef4444;
+  font-size: 12px;
+  margin-top: 2px;
+  margin-left: 5px;
+}

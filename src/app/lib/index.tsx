@@ -1,6 +1,7 @@
 import { ReactNode } from 'react'
 import { ReactStrictModeProvider } from './ReactStrictModeProvider'
 import { RouterProvider } from './RouterProvider'
+import { ToastProvider } from './ToastProvider'
 
 interface CombinedProvidersProps {
   children: ReactNode
@@ -9,7 +10,11 @@ interface CombinedProvidersProps {
 export const CombinedProviders = ({ children }: CombinedProvidersProps) => {
   return (
     <ReactStrictModeProvider>
-      <RouterProvider>{children}</RouterProvider>
+      <RouterProvider>
+        <ToastProvider>
+          {children}
+        </ToastProvider>
+      </RouterProvider>
     </ReactStrictModeProvider>
   )
 }
