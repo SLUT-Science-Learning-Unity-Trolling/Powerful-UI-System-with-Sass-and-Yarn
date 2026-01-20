@@ -1,0 +1,514 @@
+:root {
+  --topbar-h: 72px;
+  --topbar-gap: 14px;
+  --topbar-side: 10px;
+}
+
+.container {
+  height: 100vh;
+  height: 100dvh;
+  min-height: 0;
+  overflow: hidden;
+
+  background: #0a0a0a;
+  position: relative;
+
+  &::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: repeating-linear-gradient(
+      45deg,
+      transparent,
+      transparent 20px,
+      rgba(26, 182, 169, 0.02) 20px,
+      rgba(26, 182, 169, 0.02) 21px
+    );
+    pointer-events: none;
+    z-index: 0;
+  }
+}
+
+.topBar {
+  position: fixed;
+  z-index: 5;
+
+  top: calc(env(safe-area-inset-top) + 10px);
+  left: var(--topbar-side);
+  right: var(--topbar-side);
+
+  height: var(--topbar-h);
+
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+
+  box-sizing: border-box;
+  padding: 14px 18px;
+
+  background: rgba(17, 18, 19, 0.75);
+  border: 1px solid #202020;
+  border-radius: 16px;
+
+  backdrop-filter: blur(10px);
+}
+
+.brand {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  user-select: none;
+  min-width: 0;
+}
+
+.brandDot {
+  width: 10px;
+  height: 10px;
+  border-radius: 999px;
+  background: #1ab6a9;
+  flex: 0 0 auto;
+}
+
+.brandText {
+  color: #ffffff;
+  font-family: 'Inter', sans-serif;
+  font-weight: 700;
+  font-size: 14px;
+  letter-spacing: 0.2px;
+}
+
+.brandHint {
+  color: #8c8d90;
+  font-family: 'Montserrat', sans-serif;
+  font-weight: 600;
+  font-size: 12px;
+}
+
+.topActions {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.main {
+  position: fixed;
+  z-index: 1;
+
+  left: 0;
+  right: 0;
+  bottom: 0;
+
+  top: calc(
+    env(safe-area-inset-top) + 10px + var(--topbar-h) + var(--topbar-gap)
+  );
+
+  min-height: 0;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  padding: 0 var(--topbar-side) 10px var(--topbar-side);
+  box-sizing: border-box;
+}
+
+.shell {
+  width: 100%;
+  max-width: 980px;
+
+  height: 100%;
+  min-height: 0;
+  overflow: hidden;
+
+  background: rgba(17, 18, 19, 0.82);
+  border: 1px solid #202020;
+  border-radius: 18px;
+  backdrop-filter: blur(10px);
+
+  display: flex;
+  flex-direction: column;
+}
+
+.header {
+  padding: 18px 18px 14px 18px;
+  border-bottom: 1px solid #202020;
+
+  display: flex;
+  justify-content: space-between;
+  gap: 14px;
+  flex: 0 0 auto;
+}
+
+.headerLeft {
+  min-width: 0;
+}
+
+.title {
+  margin: 0 0 6px 0;
+  color: #ffffff;
+  font-family: 'Inter', sans-serif;
+  font-weight: 800;
+  font-size: 18px;
+}
+
+.subtitle {
+  margin: 0;
+  color: #8c8d90;
+  font-family: 'Montserrat', sans-serif;
+  font-size: 13px;
+  line-height: 1.5;
+}
+
+.summary {
+  display: flex;
+  gap: 10px;
+  align-items: center;
+  flex: 0 0 auto;
+}
+
+.summaryItem {
+  background: rgba(10, 10, 10, 0.35);
+  border: 1px solid #202020;
+  border-radius: 12px;
+  padding: 10px 12px;
+  min-width: 80px;
+
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.summaryLabel {
+  color: #8c8d90;
+  font-family: 'Montserrat', sans-serif;
+  font-weight: 700;
+  font-size: 11px;
+  letter-spacing: 0.3px;
+}
+
+.summaryValue,
+.summaryValueOk,
+.summaryValueFail {
+  font-family: 'Inter', sans-serif;
+  font-weight: 900;
+  font-size: 18px;
+  line-height: 1;
+}
+
+.summaryValue {
+  color: #ffffff;
+}
+.summaryValueOk {
+  color: #1ab6a9;
+}
+.summaryValueFail {
+  color: #ff6b6b;
+}
+
+.list {
+  padding: 16px 18px 18px 18px;
+  flex: 1;
+  min-height: 0;
+  overflow: auto;
+
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+
+  -webkit-overflow-scrolling: touch;
+}
+
+.card {
+  border: 1px solid #202020;
+  border-radius: 16px;
+  background: rgba(10, 10, 10, 0.35);
+  padding: 14px;
+
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.cardTop {
+  display: flex;
+  justify-content: space-between;
+  gap: 12px;
+  align-items: flex-start;
+}
+
+.cardInfo {
+  min-width: 0;
+}
+
+.cardTitleRow {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.cardTitle {
+  color: #ffffff;
+  font-family: 'Inter', sans-serif;
+  font-weight: 800;
+  font-size: 14px;
+}
+
+.cardDesc {
+  margin-top: 6px;
+  color: #8c8d90;
+  font-family: 'Montserrat', sans-serif;
+  font-size: 12px;
+  line-height: 1.5;
+}
+
+.cardMeta {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  flex: 0 0 auto;
+  min-width: 160px;
+}
+
+.metaRow {
+  display: flex;
+  justify-content: space-between;
+  gap: 10px;
+}
+
+.metaLabel {
+  color: #8c8d90;
+  font-family: 'Montserrat', sans-serif;
+  font-size: 12px;
+  font-weight: 700;
+}
+
+.metaValue {
+  color: #ffffff;
+  font-family: 'Montserrat', sans-serif;
+  font-size: 12px;
+  font-weight: 700;
+}
+
+.badge {
+  padding: 4px 8px;
+  border-radius: 999px;
+  border: 1px solid #202020;
+  font-family: 'Montserrat', sans-serif;
+  font-weight: 900;
+  font-size: 11px;
+  letter-spacing: 0.3px;
+}
+
+.badge_idle {
+  color: #8c8d90;
+  background: rgba(140, 141, 144, 0.08);
+  border-color: rgba(140, 141, 144, 0.25);
+}
+
+.badge_loading {
+  color: #1ab6a9;
+  background: rgba(26, 182, 169, 0.08);
+  border-color: rgba(26, 182, 169, 0.25);
+}
+
+.badge_ok {
+  color: #1ab6a9;
+  background: rgba(26, 182, 169, 0.1);
+  border-color: rgba(26, 182, 169, 0.35);
+}
+
+.badge_fail {
+  color: #ff6b6b;
+  background: rgba(255, 107, 107, 0.08);
+  border-color: rgba(255, 107, 107, 0.25);
+}
+
+.cardBottom {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+}
+
+.detail {
+  min-width: 0;
+  flex: 1;
+  display: flex;
+  justify-content: flex-end;
+}
+
+.okText {
+  color: #1ab6a9;
+  font-family: 'Montserrat', sans-serif;
+  font-size: 12px;
+  font-weight: 600;
+}
+
+.failText {
+  color: #ff6b6b;
+  font-family: 'Montserrat', sans-serif;
+  font-size: 12px;
+  font-weight: 800;
+  text-align: right;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.mutedText {
+  color: #8c8d90;
+  font-family: 'Montserrat', sans-serif;
+  font-size: 12px;
+  font-weight: 700;
+}
+
+.primaryButton {
+  padding: 10px 14px;
+  background: #1ab6a9;
+  border: none;
+  border-radius: 10px;
+  color: #000000;
+  font-family: 'Montserrat', sans-serif;
+  font-weight: 600;
+  font-size: 13px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+
+  &:hover:not(:disabled) {
+    background: #18a599;
+    transform: translateY(-2px);
+  }
+
+  &:disabled {
+    opacity: 0.45;
+    cursor: not-allowed;
+  }
+}
+
+.ghostButton {
+  padding: 11px 14px;
+  background: rgba(26, 182, 169, 0.1);
+  border: 1px solid rgba(26, 182, 169, 0.45);
+  border-radius: 10px;
+  color: #1ab6a9;
+  font-family: 'Montserrat', sans-serif;
+  font-weight: 800;
+  font-size: 13px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+
+  &:hover:not(:disabled) {
+    background: rgba(26, 182, 169, 0.18);
+    transform: translateY(-2px);
+  }
+
+  &:disabled {
+    opacity: 0.35;
+    cursor: not-allowed;
+  }
+}
+
+@media (hover: none) and (pointer: coarse) {
+  .primaryButton,
+  .ghostButton {
+    min-height: 44px;
+  }
+}
+
+@media (max-width: 768px) {
+  :root {
+    --topbar-h: 118px;
+    --topbar-gap: 12px;
+    --topbar-side: 8px;
+  }
+
+  .topBar {
+    padding: 12px 12px;
+    border-radius: 14px;
+    flex-direction: column;
+    align-items: stretch;
+    justify-content: center;
+    gap: 10px;
+  }
+
+  .brand {
+    justify-content: flex-start;
+  }
+
+  .brandHint {
+    display: none;
+  }
+
+  .topActions {
+    width: 100%;
+  }
+
+  .ghostButton {
+    width: 100%;
+  }
+
+  .header {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .summary {
+    justify-content: flex-start;
+    flex-wrap: wrap;
+  }
+
+  .list {
+    padding: 14px 12px 12px 12px;
+  }
+
+  .cardTop {
+    flex-direction: column;
+  }
+
+  .cardMeta {
+    min-width: 0;
+    width: 100%;
+    gap: 8px;
+  }
+
+  .metaRow {
+    background: rgba(17, 18, 19, 0.45);
+    border: 1px solid #202020;
+    border-radius: 10px;
+    padding: 8px 10px;
+  }
+
+  .cardBottom {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .detail {
+    justify-content: flex-start;
+  }
+
+  .failText {
+    white-space: normal;
+    overflow: visible;
+    text-overflow: unset;
+    text-align: left;
+  }
+}
+
+@media (max-width: 360px) {
+  :root {
+    --topbar-h: 126px;
+    --topbar-gap: 10px;
+    --topbar-side: 6px;
+  }
+
+  .shell {
+    border-radius: 14px;
+  }
+
+  .card {
+    border-radius: 14px;
+    padding: 12px;
+  }
+}

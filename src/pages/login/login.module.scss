@@ -41,12 +41,12 @@
   width: 20px;
   height: 20px;
   cursor: pointer;
-  accent-color: #1AB6A9;
+  accent-color: #1ab6a9;
   flex-shrink: 0;
 }
 
 .checkboxText {
-  color: #8C8D90;
+  color: #8c8d90;
   font-size: 14px;
   font-weight: 500;
   font-family: 'Montserrat', sans-serif;
@@ -62,7 +62,7 @@
 
 .submitButton {
   padding: 6px 18px;
-  background: #1AB6A9;
+  background: #1ab6a9;
   border: none;
   border-radius: 8px;
   color: #000000;
@@ -83,10 +83,10 @@
   }
 }
 
-.forgotPassword {
+.reg {
   background: none;
   border: none;
-  color: #8C8D90;
+  color: #8c8d90;
   font-family: 'Montserrat', sans-serif;
   font-size: 12px;
   font-weight: 500;
@@ -96,7 +96,7 @@
   text-decoration: none;
 
   &:hover {
-    color: #1AB6A9;
+    color: #1ab6a9;
     text-decoration: underline;
   }
 }
@@ -124,7 +124,7 @@
     width: 100%;
   }
 
-  .forgotPassword {
+  .reg {
     width: 100%;
     text-align: center;
   }

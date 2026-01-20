@@ -1,27 +1,82 @@
 import { useState } from 'react'
 import { motion } from 'framer-motion'
+import { useNavigate } from 'react-router-dom'
 import ValidatedInput from 'widgets/validatedInput'
 import { passwordValidator } from 'utils/validators'
 import { useToast } from 'utils/useToast'
+import { api } from 'shared/api/client'
+import { ApiError } from 'shared/api/errors'
 import styles from './login.module.scss'
+import { useAuth } from 'app/lib/AuthProvider'
 
 export default function LoginPage() {
   const [login, setLogin] = useState('')
   const [password, setPassword] = useState('')
   const [rememberMe, setRememberMe] = useState(true)
-  const { addToast } = useToast()
+  const [isLoading, setIsLoading] = useState(false)
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const { addToast } = useToast()
+  const navigate = useNavigate()
+
+  const auth = useAuth()
+
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
-    console.log('Login:', { login, password, rememberMe })
+    if (isLoading) return
+
+    const identifier = login.trim()
+    if (!identifier || !password) {
+      addToast({
+        message: 'Введите логин и пароль',
+        type: 'warning',
+        duration: 2500,
+      })
+      return
+    }
+
+    setIsLoading(true)
+    try {
+      await api.login({ identifier, password })
+
+      addToast({
+        message: 'Успешный вход',
+        type: 'success',
+        duration: 2000,
+      })
+
+      await auth.refresh()
+
+      navigate('/', { replace: true })
+    } catch (e) {
+      setPassword('')
+
+      if (e instanceof ApiError) {
+        const msg =
+          e.payload?.detail ||
+          (e.status === 401 || e.status === 403
+            ? 'Неверный логин или пароль'
+            : e.message)
+
+        addToast({
+          message: msg,
+          type: 'error',
+          duration: 3500,
+        })
+        return
+      }
+
+      addToast({
+        message: 'Ошибка сети/сервера',
+        type: 'error',
+        duration: 3500,
+      })
+    } finally {
+      setIsLoading(false)
+    }
   }
 
-  const handleForgotPassword = () => {
-    addToast({
-      message: 'Ну удачи вспомнить',
-      type: 'warning',
-      duration: 3000,
-    })
+  const handleRegister = () => {
+    navigate('/reg', { replace: true })
   }
 
   return (
@@ -34,7 +89,12 @@ export default function LoginPage() {
       >
         <h1 className={styles.title}>Вход</h1>
 
-        <form className={styles.form} onSubmit={handleSubmit}>
+        <form
+          className={styles.form}
+          onSubmit={(e) => {
+            void handleSubmit(e)
+          }}
+        >
           <ValidatedInput
             placeholder="Логин"
             value={login}
@@ -55,20 +115,27 @@ export default function LoginPage() {
               checked={rememberMe}
               onChange={(e) => setRememberMe(e.target.checked)}
               className={styles.checkbox}
+              disabled={isLoading}
             />
             <span className={styles.checkboxText}>Запомнить меня</span>
           </label>
 
           <div className={styles.actions}>
-            <button type="submit" className={styles.submitButton}>
-              Войти
+            <button
+              type="submit"
+              className={styles.submitButton}
+              disabled={isLoading}
+            >
+              {isLoading ? 'Входим…' : 'Войти'}
             </button>
+
             <button
               type="button"
-              className={styles.forgotPassword}
-              onClick={handleForgotPassword}
+              className={styles.reg}
+              onClick={handleRegister}
+              disabled={isLoading}
             >
-              Забыли пароль?
+              Нет аккаунта?
             </button>
           </div>
         </form>

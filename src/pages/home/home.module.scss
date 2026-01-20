@@ -1,12 +1,20 @@
+:root {
+  --topbar-h: 72px;
+  --topbar-gap: 14px;
+  --topbar-side: 10px;
+}
+
 .container {
-  min-height: 100vh;
-  display: flex;
-  background: #0a0a0a;
-  position: relative;
-  gap: 20px;
+  height: 100vh;
+  height: 100dvh;
+  min-height: 0;
   overflow: hidden;
 
-  // Паттерн фона с полосками под 45 градусов
+  background: #0a0a0a;
+  position: relative;
+  display: flex;
+  flex-direction: column;
+
   &::before {
     content: '';
     position: absolute;
@@ -21,137 +29,358 @@
     pointer-events: none;
     z-index: 0;
   }
-
-  // Градиентное затухание паттерна к сайдбару
-  &::after {
-    content: '';
-    position: absolute;
-    top: 0;
-    left: 0;
-    width: 400px;
-    height: 100%;
-    background: linear-gradient(
-      to right,
-      #0a0a0a 0%,
-      rgba(10, 10, 10, 0.8) 50%,
-      transparent 100%
-    );
-    pointer-events: none;
-    z-index: 1;
-  }
-}
-
-.sidebar {
-  margin: 10px;
-  width: 320px;
-  background: #111213;
-  border: 1px solid #202020;
-  border-radius: 16px;
-  padding: 24px;
-  display: flex;
-  flex-direction: column;
-  gap: 24px;
-  flex-shrink: 0;
-  position: relative;
-  z-index: 2;
-}
-
-.sidebarTitle {
-  color: #ffffff;
-  font-size: 20px;
-  font-weight: 600;
-  margin: 0;
-  font-family: 'Inter', sans-serif;
-}
-
-.uploadSection {
-  display: flex;
-  flex-direction: column;
-  gap: 16px;
 }
 
 .fileInput {
   display: none;
 }
 
-.uploadZone {
+.topBar {
+  position: fixed;
+  z-index: 5;
+
+  top: calc(env(safe-area-inset-top) + 10px);
+  left: var(--topbar-side);
+  right: var(--topbar-side);
+
+  height: var(--topbar-h);
+
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+
+  box-sizing: border-box;
+  padding: 14px 18px;
+
+  background: rgba(17, 18, 19, 0.75);
+  border: 1px solid #202020;
+  border-radius: 16px;
+
+  backdrop-filter: blur(10px);
+}
+
+.brand {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  user-select: none;
+  min-width: 0;
+}
+
+.brandDot {
+  width: 10px;
+  height: 10px;
+  border-radius: 999px;
+  background: #1ab6a9;
+  flex: 0 0 auto;
+}
+
+.brandText {
+  color: #ffffff;
+  font-family: 'Inter', sans-serif;
+  font-weight: 600;
+  font-size: 14px;
+  letter-spacing: 0.2px;
+}
+
+.topActions {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.main {
+  position: fixed;
+  z-index: 1;
+
+  left: 0;
+  right: 0;
+  bottom: 0;
+
+  top: calc(
+    env(safe-area-inset-top) + 10px + var(--topbar-h) + var(--topbar-gap)
+  );
+
+  min-height: 0;
+  overflow: hidden;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  padding: 0 var(--topbar-side) 10px var(--topbar-side);
+  box-sizing: border-box;
+}
+
+.dropLayer {
+  position: absolute;
+  inset: 0;
+  z-index: 1;
+}
+
+.dropLayerActive {
+  background: rgba(26, 182, 169, 0.06);
+}
+
+.hero,
+.previewStage,
+.pdfStage {
+  position: relative;
+  z-index: 2;
+  width: 100%;
+  height: 100%;
+  min-height: 0;
+  overflow: hidden;
+}
+
+/* HERO */
+.hero {
+  max-width: 980px;
+  padding: 12px;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  min-height: 0;
+}
+
+.dropZone {
   border: 2px dashed #202020;
-  border-radius: 12px;
-  padding: 32px 20px;
+  border-radius: 20px;
+  padding: 64px 28px;
   text-align: center;
   cursor: pointer;
-  transition: all 0.3s ease;
+  transition: all 0.25s ease;
   background: rgba(26, 182, 169, 0.02);
+  position: relative;
+  overflow: hidden;
 
   &:hover {
     border-color: #1ab6a9;
     background: rgba(26, 182, 169, 0.05);
-  }
-
-  &.dragging {
-    border-color: #1ab6a9;
-    background: rgba(26, 182, 169, 0.1);
-    transform: scale(1.02);
+    transform: translateY(-2px);
   }
 }
 
-.uploadIcon {
-  font-size: 48px;
-  margin-bottom: 12px;
-}
-
-.uploadText {
-  color: #ffffff;
-  font-size: 14px;
-  font-weight: 500;
-  margin: 0 0 8px 0;
-  font-family: 'Montserrat', sans-serif;
-}
-
-.uploadHint {
-  color: #8c8d90;
-  font-size: 12px;
-  margin: 0;
-  font-family: 'Montserrat', sans-serif;
-}
-
-.fileInfo {
+.dragging {
+  border-color: #1ab6a9;
   background: rgba(26, 182, 169, 0.1);
-  border: 1px solid #1ab6a9;
-  border-radius: 8px;
-  padding: 12px;
+  transform: scale(1.01);
 }
 
-.fileName {
+.dropIcon {
+  font-size: 56px;
+  margin-bottom: 14px;
+}
+
+.heroTitle {
+  margin: 0 0 10px 0;
   color: #ffffff;
-  font-size: 13px;
-  font-weight: 500;
-  margin-bottom: 4px;
-  font-family: 'Montserrat', sans-serif;
-  word-break: break-word;
+  font-family: 'Inter', sans-serif;
+  font-weight: 700;
+  font-size: 30px;
 }
 
-.fileSize {
+.heroText {
+  margin: 0;
   color: #8c8d90;
-  font-size: 12px;
   font-family: 'Montserrat', sans-serif;
+  font-size: 15px;
+  line-height: 1.6;
 }
 
-.actions {
+.heroHint {
+  color: #1ab6a9;
+  font-weight: 600;
+}
+
+.miniNote {
+  margin: 22px auto 0 auto;
+  display: inline-flex;
+  gap: 8px;
+  align-items: center;
+
+  padding: 10px 14px;
+  border-radius: 999px;
+  border: 1px solid #202020;
+  background: rgba(17, 18, 19, 0.6);
+
+  color: #8c8d90;
+  font-family: 'Montserrat', sans-serif;
+  font-size: 13px;
+}
+
+/* PREVIEW */
+.previewStage {
+  max-width: 980px;
+  display: flex;
+  min-height: 0;
+  height: 100%;
+}
+
+.card {
+  width: 100%;
+  min-height: 0;
+
+  background: rgba(17, 18, 19, 0.82);
+  border: 1px solid #202020;
+  border-radius: 18px;
+  overflow: hidden;
+  backdrop-filter: blur(10px);
+
   display: flex;
   flex-direction: column;
-  gap: 12px;
-  margin-top: auto;
 }
 
-.processButton {
-  padding: 12px 24px;
+.cardHeader {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 18px 18px 14px 18px;
+  border-bottom: 1px solid #202020;
+  flex: 0 0 auto;
+}
+
+.cardTitle {
+  margin: 0 0 6px 0;
+  color: #ffffff;
+  font-family: 'Inter', sans-serif;
+  font-weight: 700;
+  font-size: 18px;
+}
+
+.cardSub {
+  margin: 0;
+  color: #8c8d90;
+  font-family: 'Montserrat', sans-serif;
+  font-size: 13px;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  align-items: center;
+}
+
+.fileBadge {
+  display: inline-flex;
+  gap: 8px;
+  align-items: center;
+  padding: 6px 10px;
+  border-radius: 999px;
+  border: 1px solid rgba(26, 182, 169, 0.35);
+  background: rgba(26, 182, 169, 0.08);
+  color: #ffffff;
+}
+
+.dotSep {
+  opacity: 0.5;
+}
+
+.muted {
+  color: #8c8d90;
+}
+
+.cardHeaderActions {
+  display: flex;
+  gap: 10px;
+  align-items: center;
+}
+
+.previewBody {
+  position: relative;
+  padding: 18px;
+  background: rgba(10, 10, 10, 0.35);
+
+  flex: 1;
+  min-height: 0;
+  overflow: hidden;
+}
+
+.imageFrame {
+  border-radius: 14px;
+  border: 1px solid #202020;
+  background: #0a0a0a;
+  padding: 14px;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  min-height: 0;
+  height: clamp(320px, 55vh, 640px);
+  overflow: auto;
+  -webkit-overflow-scrolling: touch;
+}
+
+.previewImage {
+  max-width: 100%;
+  max-height: 100%;
+  width: auto;
+  height: auto;
+
+  border-radius: 10px;
+  object-fit: contain;
+  display: block;
+}
+
+.processingOverlay {
+  position: absolute;
+  inset: 0;
+  background: rgba(17, 18, 19, 0.92);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 14px;
+  padding: 18px;
+}
+
+.processingText {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.processingTitle {
+  color: #ffffff;
+  font-family: 'Inter', sans-serif;
+  font-weight: 700;
+  font-size: 16px;
+}
+
+.processingSub {
+  color: #8c8d90;
+  font-family: 'Montserrat', sans-serif;
+  font-size: 13px;
+}
+
+.cardFooter {
+  padding: 16px 18px 18px 18px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  border-top: 1px solid #202020;
+
+  flex: 0 0 auto;
+}
+
+.footerHint {
+  color: #8c8d90;
+  font-family: 'Montserrat', sans-serif;
+  font-size: 13px;
+}
+
+/* buttons */
+.primaryButton {
+  padding: 12px 18px;
   background: #1ab6a9;
   border: none;
-  border-radius: 8px;
+  border-radius: 10px;
   color: #000000;
   font-family: 'Montserrat', sans-serif;
-  font-weight: 600;
+  font-weight: 800;
   font-size: 14px;
   cursor: pointer;
   transition: all 0.2s ease;
@@ -169,159 +398,60 @@
   &:disabled {
     background: #8c8d90;
     cursor: not-allowed;
-    opacity: 0.5;
+    opacity: 0.45;
   }
 }
 
-.downloadButton {
-  padding: 12px 24px;
-  background: rgba(26, 182, 169, 0.15);
-  border: 1px solid #1ab6a9;
-  border-radius: 8px;
+.ghostButton {
+  padding: 11px 14px;
+  background: rgba(26, 182, 169, 0.1);
+  border: 1px solid rgba(26, 182, 169, 0.45);
+  border-radius: 10px;
   color: #1ab6a9;
   font-family: 'Montserrat', sans-serif;
-  font-weight: 600;
-  font-size: 14px;
-  cursor: pointer;
-  transition: all 0.2s ease;
-
-  &:hover {
-    background: rgba(26, 182, 169, 0.25);
-    transform: translateY(-2px);
-  }
-
-  &:active {
-    transform: translateY(0);
-  }
-}
-
-.resetButton {
-  padding: 10px 24px;
-  background: none;
-  border: 1px solid #202020;
-  border-radius: 8px;
-  color: #8c8d90;
-  font-family: 'Montserrat', sans-serif;
-  font-weight: 500;
+  font-weight: 700;
   font-size: 13px;
   cursor: pointer;
   transition: all 0.2s ease;
 
-  &:hover {
-    border-color: #2a2a2a;
-    color: #ffffff;
+  &:hover:not(:disabled) {
+    background: rgba(26, 182, 169, 0.18);
+    transform: translateY(-2px);
+  }
+
+  &:disabled {
+    opacity: 0.35;
+    cursor: not-allowed;
   }
 }
 
-.mainContent {
-  flex: 1;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  padding: 0;
-  overflow: auto;
-  position: relative;
-  z-index: 2;
-}
-
-.emptyState {
-  text-align: center;
-  max-width: 500px;
-}
-
-.emptyIcon {
-  font-size: 80px;
-  margin-bottom: 24px;
-}
-
-.emptyTitle {
-  color: #ffffff;
-  font-size: 24px;
-  font-weight: 600;
-  margin: 0 0 16px 0;
-  font-family: 'Inter', sans-serif;
-}
-
-.emptyText {
-  color: #8c8d90;
-  font-size: 15px;
-  line-height: 1.6;
-  margin: 0;
-  font-family: 'Montserrat', sans-serif;
-}
-
-.emptyHint {
-  color: #1ab6a9;
-  font-size: 14px;
-  display: block;
-  margin-top: 8px;
-}
-
-.previewContainer,
-.pdfContainer {
-  width: 100%;
-  max-width: 900px;
-  background: #111213;
+.resetButton {
+  padding: 11px 14px;
+  background: transparent;
   border: 1px solid #202020;
-  border-radius: 16px;
-  padding: 24px;
-  position: relative;
-}
-
-.previewTitle {
-  color: #ffffff;
-  font-size: 18px;
+  border-radius: 10px;
+  color: #8c8d90;
+  font-family: 'Montserrat', sans-serif;
   font-weight: 600;
-  margin: 0 0 20px 0;
-  font-family: 'Inter', sans-serif;
-}
+  font-size: 13px;
+  cursor: pointer;
+  transition: all 0.2s ease;
 
-.imageWrapper {
-  width: 100%;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  border-radius: 12px;
-  padding: 20px;
-  margin: -20px;
-  min-height: 400px;
-  max-height: 600px;
-  overflow: hidden;
-}
+  &:hover:not(:disabled) {
+    border-color: #2a2a2a;
+    color: #ffffff;
+    transform: translateY(-2px);
+  }
 
-.previewImage {
-  max-width: 100%;
-  max-height: 100%;
-  width: auto;
-  height: auto;
-  object-fit: contain;
-  border-radius: 8px;
-  display: block;
-}
-
-.processingOverlay {
-  position: absolute;
-  inset: 0;
-  background: rgba(17, 18, 19, 0.95);
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  border-radius: 16px;
-  gap: 16px;
-
-  p {
-    color: #1ab6a9;
-    font-size: 16px;
-    font-weight: 500;
-    font-family: 'Montserrat', sans-serif;
-    margin: 0;
+  &:disabled {
+    opacity: 0.35;
+    cursor: not-allowed;
   }
 }
 
 .spinner {
-  width: 50px;
-  height: 50px;
+  width: 46px;
+  height: 46px;
   border: 4px solid rgba(26, 182, 169, 0.2);
   border-top-color: #1ab6a9;
   border-radius: 50%;
@@ -334,114 +464,117 @@
   }
 }
 
-.pdfViewer {
+/* PDF */
+.pdfStage {
+  height: 100%;
+  min-height: 0;
+  display: flex;
+}
+
+.pdfShell {
+  height: 100%;
+  min-height: 0;
   width: 100%;
-  height: 700px;
-  border: none;
-  border-radius: 12px;
-  background: #ffffff;
-  display: block;
-}
+  max-width: 1200px;
+  margin: 0 auto;
 
-@media (max-width: 768px) {
-  .container {
-    flex-direction: column;
-    padding: 0px;
-    gap: 12px;
+  background: rgba(17, 18, 19, 0.82);
+  border: 1px solid #202020;
+  border-radius: 18px;
+  overflow: hidden;
+  backdrop-filter: blur(10px);
 
-    &::after {
-      display: none;
-    }
-  }
-
-  .sidebar {
-    width: calc(100% - 50px);
-    margin: 0;
-    border: none;
-    border-radius: 0;
-  }
-
-  .mainContent {
-    padding: 0;
-  }
-
-  .previewContainer,
-  .pdfContainer {
-    padding: 16px;
-  }
-
-  .pdfViewer {
-    height: 500px;
-  }
-
-  .imageWrapper {
-    min-height: 300px;
-    max-height: 450px;
-  }
-}
-
-.ratGif {
-  width: 200px;
-  height: 200px;
-  object-fit: contain;
-  margin-bottom: 24px;
-  border-radius: 12px;
-}
-
-.pdfHeader {
   display: flex;
+  flex-direction: column;
+}
+
+.pdfToolbar {
+  display: flex;
+  align-items: center;
   justify-content: space-between;
-  align-items: center;
-  margin-bottom: 20px;
+  gap: 12px;
+
+  padding: 14px 16px;
+  border-bottom: 1px solid #202020;
+  flex: 0 0 auto;
 }
 
-.pdfControls {
+.pdfTitle {
   display: flex;
   align-items: center;
-  gap: 12px;
+  gap: 10px;
+
+  color: #ffffff;
+  font-family: 'Inter', sans-serif;
+  font-weight: 800;
+  font-size: 14px;
+}
+
+.okDot {
+  width: 10px;
+  height: 10px;
+  border-radius: 999px;
+  background: #1ab6a9;
+}
+
+.pdfTools {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.pager {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding-right: 6px;
+  border-right: 1px solid #202020;
+  margin-right: 6px;
 }
 
 .pdfNavButton {
-  background: rgba(26, 182, 169, 0.15);
-  border: 1px solid #1ab6a9;
-  border-radius: 6px;
+  background: rgba(26, 182, 169, 0.12);
+  border: 1px solid rgba(26, 182, 169, 0.5);
+  border-radius: 8px;
   color: #1ab6a9;
   font-size: 18px;
-  width: 36px;
-  height: 36px;
-  display: flex;
+  width: 38px;
+  height: 38px;
+  display: inline-flex;
   align-items: center;
   justify-content: center;
   cursor: pointer;
   transition: all 0.2s ease;
 
   &:hover:not(:disabled) {
-    background: rgba(26, 182, 169, 0.25);
+    background: rgba(26, 182, 169, 0.2);
+    transform: translateY(-2px);
   }
 
   &:disabled {
-    opacity: 0.3;
+    opacity: 0.28;
     cursor: not-allowed;
   }
 }
 
 .pageInfo {
   color: #8c8d90;
-  font-size: 14px;
+  font-size: 13px;
   font-family: 'Montserrat', sans-serif;
-  font-weight: 500;
+  font-weight: 700;
   min-width: 70px;
   text-align: center;
 }
 
-.pdfViewerWrapper {
+.pdfViewport {
+  flex: 1;
+  min-height: 0;
+  overflow: auto;
   background: #0a0a0a;
-  border-radius: 12px;
-  padding: 20px;
+  padding: 18px;
   display: flex;
   justify-content: center;
-  overflow: auto;
-  max-height: 700px;
+  -webkit-overflow-scrolling: touch;
 }
 
 .pdfDocument {
@@ -451,52 +584,137 @@
 
 .pdfPage {
   canvas {
-    border-radius: 8px;
-    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+    border-radius: 12px;
+    box-shadow: 0 6px 18px rgba(0, 0, 0, 0.35);
   }
 }
 
 .pdfLoading,
 .pdfError {
+  min-height: 360px;
   display: flex;
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  gap: 16px;
-  min-height: 400px;
+  gap: 14px;
 
   p {
+    margin: 0;
     color: #8c8d90;
-    font-size: 16px;
+    font-size: 14px;
     font-family: 'Montserrat', sans-serif;
   }
 }
 
-.downloadFallback {
-  padding: 10px 20px;
-  background: #1ab6a9;
-  border: none;
-  border-radius: 8px;
-  color: #000000;
-  font-family: 'Montserrat', sans-serif;
-  font-weight: 600;
-  font-size: 14px;
-  cursor: pointer;
-  transition: all 0.2s ease;
-
-  &:hover {
-    background: #18a599;
+@media (hover: none) and (pointer: coarse) {
+  .primaryButton,
+  .ghostButton,
+  .resetButton {
+    min-height: 44px;
   }
 }
 
+/* responsive */
 @media (max-width: 768px) {
-  .pdfHeader {
+  :root {
+    --topbar-h: 118px;
+    --topbar-gap: 12px;
+    --topbar-side: 8px;
+  }
+
+  .topBar {
+    padding: 12px 12px;
+    border-radius: 14px;
+
     flex-direction: column;
-    gap: 12px;
+    align-items: stretch;
+    justify-content: center;
+    gap: 10px;
+  }
+
+  .topActions {
+    width: 100%;
+  }
+
+  .ghostButton {
+    width: 100%;
+  }
+
+  .dropZone {
+    padding: 44px 18px;
+    border-radius: 16px;
+  }
+
+  .heroTitle {
+    font-size: 24px;
+  }
+
+  .cardHeader {
+    flex-direction: column;
     align-items: flex-start;
   }
 
-  .pdfViewerWrapper {
-    max-height: 500px;
+  .cardHeaderActions {
+    width: 100%;
+    justify-content: flex-start;
+    flex-wrap: wrap;
+  }
+
+  .cardFooter {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .footerHint {
+    text-align: center;
+  }
+
+  .pdfToolbar {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .pdfTools {
+    justify-content: space-between;
+    flex-wrap: wrap;
+  }
+
+  .pager {
+    border-right: none;
+    margin-right: 0;
+    padding-right: 0;
+  }
+
+  .imageFrame {
+    height: clamp(260px, 52vh, 520px);
+  }
+
+  .pdfViewport {
+    padding: 12px;
+  }
+}
+
+@media (max-width: 360px) {
+  :root {
+    --topbar-h: 126px;
+    --topbar-gap: 10px;
+    --topbar-side: 6px;
+  }
+
+  .dropZone {
+    padding: 40px 16px;
+  }
+
+  .heroTitle {
+    font-size: 22px;
+  }
+
+  .pdfNavButton {
+    width: 36px;
+    height: 36px;
+  }
+
+  .pageInfo {
+    min-width: 62px;
   }
 }

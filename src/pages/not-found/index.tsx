@@ -1,6 +1,6 @@
 import { useNavigate } from 'react-router-dom'
 import { motion } from 'framer-motion'
-import { useState, useEffect } from 'react'
+import { startTransition, useEffect, useState } from 'react'
 import InfoIcon from 'shared/ui/img/info.svg?react'
 import rat from 'shared/ui/img/rat.gif'
 import styles from './notFound.module.scss'
@@ -30,7 +30,9 @@ export default function NotFoundPage() {
   }
 
   const handleGoHome = () => {
-    navigate('/')
+    startTransition(() => {
+      navigate('/', { replace: true })
+    })
   }
 
   return (

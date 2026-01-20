@@ -1,5 +1,6 @@
 import { ReactNode } from 'react'
 import { BrowserRouter } from 'react-router-dom'
+import { AuthProvider } from './AuthProvider'
 
 interface RouterProviderProps {
   children: ReactNode
@@ -7,6 +8,6 @@ interface RouterProviderProps {
 
 export const RouterProvider = ({ children }: RouterProviderProps) => (
   <BrowserRouter>
-    {children}
+    <AuthProvider>{children}</AuthProvider>
   </BrowserRouter>
 )

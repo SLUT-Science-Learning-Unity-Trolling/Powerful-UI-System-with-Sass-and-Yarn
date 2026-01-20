@@ -1,29 +1,73 @@
 /* eslint-disable @typescript-eslint/no-misused-promises */
-/* eslint-disable @typescript-eslint/no-unused-vars */
-import { useState, useRef } from 'react'
+import { useEffect, useMemo, useRef, useState } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
 import { Document, Page, pdfjs } from 'react-pdf'
 import { useToast } from 'utils/useToast'
-import rat from 'shared/ui/img/rat.gif'
 import styles from './home.module.scss'
+import mockPdfUrl from 'shared/mocks/processed.pdf?url'
+import pdfWorker from 'pdfjs-dist/build/pdf.worker.min.mjs?url'
 
 import 'react-pdf/dist/Page/AnnotationLayer.css'
 import 'react-pdf/dist/Page/TextLayer.css'
 
-pdfjs.GlobalWorkerOptions.workerSrc = `https://unpkg.com/pdfjs-dist@${pdfjs.version}/build/pdf.worker.min.js`
+pdfjs.GlobalWorkerOptions.workerSrc = pdfWorker
+
+type Step = 'idle' | 'ready' | 'processing' | 'done'
+
+const MAX_MB = 10
 
 export default function HomePage() {
-  const [selectedImage, setSelectedImage] = useState<File | null>(null)
-  const [imagePreview, setImagePreview] = useState<string | null>(null)
-  const [pdfUrl, setPdfUrl] = useState<string | null>(null)
-  const [isProcessing, setIsProcessing] = useState(false)
-  const [isDragging, setIsDragging] = useState(false)
-  const [numPages, setNumPages] = useState<number>(0)
-  const [pageNumber, setPageNumber] = useState<number>(1)
-  const fileInputRef = useRef<HTMLInputElement>(null)
   const { addToast } = useToast()
 
-  const handleFileSelect = (file: File) => {
+  const [step, setStep] = useState<Step>('idle')
+  const [isDragging, setIsDragging] = useState(false)
+
+  const [selectedImage, setSelectedImage] = useState<File | null>(null)
+  const [imagePreview, setImagePreview] = useState<string | null>(null)
+
+  const [pdfUrl, setPdfUrl] = useState<string | null>(null)
+  const [numPages, setNumPages] = useState(0)
+  const [pageNumber, setPageNumber] = useState(1)
+
+  const fileInputRef = useRef<HTMLInputElement>(null)
+
+  const pdfViewportRef = useRef<HTMLDivElement>(null)
+  const [pdfWidth, setPdfWidth] = useState<number>(900)
+
+  const readableSize = useMemo(() => {
+    if (!selectedImage) return ''
+    return `${(selectedImage.size / 1024 / 1024).toFixed(2)} MB`
+  }, [selectedImage])
+
+  useEffect(() => {
+    const el = pdfViewportRef.current
+    if (!el) return
+
+    const ro = new ResizeObserver(() => {
+      const w = el.clientWidth
+      setPdfWidth(Math.max(320, Math.min(1100, w - 24)))
+    })
+    ro.observe(el)
+    return () => ro.disconnect()
+  }, [step])
+
+  const resetAll = () => {
+    setStep('idle')
+    setIsDragging(false)
+
+    setSelectedImage(null)
+    setImagePreview(null)
+
+    setPdfUrl(null)
+    setNumPages(0)
+    setPageNumber(1)
+
+    if (pdfUrl?.startsWith('blob:')) URL.revokeObjectURL(pdfUrl)
+
+    if (fileInputRef.current) fileInputRef.current.value = ''
+  }
+
+  const validateAndSetFile = (file: File) => {
     if (!file.type.startsWith('image/')) {
       addToast({
         message: 'Пожалуйста, выберите изображение',
@@ -33,74 +77,81 @@ export default function HomePage() {
       return
     }
 
-    setSelectedImage(file)
-    const reader = new FileReader()
-    reader.onload = (e) => {
-      setImagePreview(e.target?.result as string)
+    const mb = file.size / 1024 / 1024
+    if (mb > MAX_MB) {
+      addToast({
+        message: `Файл слишком большой (макс. ${MAX_MB}MB)`,
+        type: 'error',
+        duration: 3500,
+      })
+      return
     }
-    reader.readAsDataURL(file)
+
+    setSelectedImage(file)
     setPdfUrl(null)
+    setNumPages(0)
     setPageNumber(1)
+
+    const reader = new FileReader()
+    reader.onload = (e) => setImagePreview(e.target?.result as string)
+    reader.readAsDataURL(file)
+
+    setStep('ready')
   }
 
   const handleDrop = (e: React.DragEvent) => {
     e.preventDefault()
     setIsDragging(false)
-
-    const file = e.dataTransfer.files[0]
-    if (file) handleFileSelect(file)
+    const file = e.dataTransfer.files?.[0]
+    if (file) validateAndSetFile(file)
   }
 
   const handleDragOver = (e: React.DragEvent) => {
     e.preventDefault()
+    if (step === 'processing' || step === 'done') return
     setIsDragging(true)
   }
 
-  const handleDragLeave = () => {
-    setIsDragging(false)
-  }
+  const handleDragLeave = () => setIsDragging(false)
+
+  const handlePickClick = () => fileInputRef.current?.click()
 
   const handleFileInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0]
-    if (file) handleFileSelect(file)
+    if (file) validateAndSetFile(file)
   }
 
   const handleUpload = async () => {
     if (!selectedImage) return
 
-    setIsProcessing(true)
+    setStep('processing')
 
     const formData = new FormData()
     formData.append('image', selectedImage)
 
     try {
-      // const response = await fetch('/api/process-image', {
-      //   method: 'POST',
-      //   body: formData,
-      // })
-      // const blob = await response.blob()
+      // const resp = await fetch('/api/process-image', { method: 'POST', body: formData })
+      // if (!resp.ok) throw new Error('Upload failed')
+      // const blob = await resp.blob()
       // const url = URL.createObjectURL(blob)
       // setPdfUrl(url)
 
-      await new Promise((resolve) => setTimeout(resolve, 3000))
+      await new Promise((r) => setTimeout(r, 1500))
+      const resp = await fetch(mockPdfUrl)
+      const blob = await resp.blob()
 
-      setPdfUrl(
-        'https://www.w3.org/WAI/ER/tests/xhtml/testfiles/resources/pdf/dummy.pdf'
-      )
+      const url = URL.createObjectURL(blob)
+      setPdfUrl(url)
 
-      addToast({
-        message: 'PDF готов к скачиванию!',
-        type: 'success',
-        duration: 3000,
-      })
-    } catch (error) {
+      addToast({ message: 'PDF готов!', type: 'success', duration: 2500 })
+      setStep('done')
+    } catch {
       addToast({
         message: 'Ошибка обработки изображения',
         type: 'error',
         duration: 3000,
       })
-    } finally {
-      setIsProcessing(false)
+      setStep('ready')
     }
   }
 
@@ -109,230 +160,291 @@ export default function HomePage() {
 
     const link = document.createElement('a')
     link.href = pdfUrl
-    link.download = 'processed-document.pdf'
+    link.download = 'document.pdf'
     link.click()
 
-    addToast({
-      message: 'PDF загружен!',
-      type: 'success',
-      duration: 2000,
-    })
+    addToast({ message: 'PDF загружен!', type: 'success', duration: 2000 })
   }
 
-  const handleReset = () => {
-    setSelectedImage(null)
-    setImagePreview(null)
-    setPdfUrl(null)
-    setPageNumber(1)
-    setNumPages(0)
-    if (fileInputRef.current) {
-      fileInputRef.current.value = ''
-    }
-  }
-
-  const onDocumentLoadSuccess = ({ numPages }: { numPages: number }) => {
-    setNumPages(numPages)
+  const onDocumentLoadSuccess = ({ numPages: pages }: { numPages: number }) => {
+    setNumPages(pages)
     setPageNumber(1)
   }
 
-  const changePage = (offset: number) => {
-    setPageNumber((prevPageNumber) => prevPageNumber + offset)
-  }
-
-  const previousPage = () => {
-    changePage(-1)
-  }
-
-  const nextPage = () => {
-    changePage(1)
-  }
+  const previousPage = () => setPageNumber((p) => Math.max(1, p - 1))
+  const nextPage = () => setPageNumber((p) => Math.min(numPages || 1, p + 1))
 
   return (
     <div className={styles.container}>
-      <aside className={styles.sidebar}>
-        <h2 className={styles.sidebarTitle}>Загрузка</h2>
+      <input
+        ref={fileInputRef}
+        type="file"
+        accept="image/*"
+        className={styles.fileInput}
+        onChange={handleFileInputChange}
+      />
 
-        <div className={styles.uploadSection}>
-          <input
-            ref={fileInputRef}
-            type="file"
-            accept="image/*"
-            onChange={handleFileInputChange}
-            className={styles.fileInput}
-            id="fileInput"
-          />
-
-          <label
-            htmlFor="fileInput"
-            className={`${styles.uploadZone} ${isDragging ? styles.dragging : ''}`}
-            onDrop={handleDrop}
-            onDragOver={handleDragOver}
-            onDragLeave={handleDragLeave}
-          >
-            <div className={styles.uploadIcon}>📁</div>
-            <p className={styles.uploadText}>
-              {isDragging
-                ? 'Отпустите файл'
-                : 'Перетащите изображение или кликните'}
-            </p>
-            <p className={styles.uploadHint}>PNG, JPG до 10MB</p>
-          </label>
-
-          {selectedImage && (
-            <motion.div
-              className={styles.fileInfo}
-              initial={{ opacity: 0, y: -10 }}
-              animate={{ opacity: 1, y: 0 }}
-            >
-              <div className={styles.fileName}>📷 {selectedImage.name}</div>
-              <div className={styles.fileSize}>
-                {(selectedImage.size / 1024 / 1024).toFixed(2)} MB
-              </div>
-            </motion.div>
-          )}
+      <div className={styles.topBar}>
+        <div className={styles.brand}>
+          <span className={styles.brandDot} />
+          <span className={styles.brandText}>Image → PDF</span>
         </div>
 
-        <div className={styles.actions}>
-          <button
-            className={styles.processButton}
-            onClick={handleUpload}
-            disabled={!selectedImage || isProcessing}
-          >
-            {isProcessing ? 'Обработка...' : 'Обработать'}
-          </button>
-
-          {pdfUrl && (
-            <motion.button
-              className={styles.downloadButton}
-              onClick={handleDownload}
-              initial={{ opacity: 0, scale: 0.9 }}
-              animate={{ opacity: 1, scale: 1 }}
+        <div className={styles.topActions}>
+          {(step === 'idle' || step === 'ready') && (
+            <button
+              className={styles.ghostButton}
+              onClick={handlePickClick}
+              disabled={step.includes('processing')}
             >
-              📥 Скачать PDF
-            </motion.button>
-          )}
-
-          {(selectedImage || pdfUrl) && (
-            <button className={styles.resetButton} onClick={handleReset}>
-              Очистить
+              Выбрать файл
             </button>
           )}
+
+          {(step === 'ready' || step === 'processing') && (
+            <button
+              className={styles.primaryButton}
+              onClick={handleUpload}
+              disabled={!selectedImage || step === 'processing'}
+            >
+              {step === 'processing' ? 'Отправляем…' : 'Отправить'}
+            </button>
+          )}
+
+          {step === 'done' && (
+            <>
+              <button className={styles.ghostButton} onClick={handleDownload}>
+                Скачать PDF
+              </button>
+              <button className={styles.resetButton} onClick={resetAll}>
+                Новая загрузка
+              </button>
+            </>
+          )}
         </div>
-      </aside>
+      </div>
 
-      <main className={styles.mainContent}>
+      <main className={styles.main}>
+        <div
+          className={`${styles.dropLayer} ${isDragging ? styles.dropLayerActive : ''}`}
+          onDrop={handleDrop}
+          onDragOver={handleDragOver}
+          onDragLeave={handleDragLeave}
+          onClick={step === 'idle' ? handlePickClick : undefined}
+          role="button"
+          tabIndex={0}
+        />
+
         <AnimatePresence mode="wait">
-          {!imagePreview && !pdfUrl && (
-            <motion.div
-              key="empty"
-              className={styles.emptyState}
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 1 }}
-              exit={{ opacity: 0 }}
+          {step === 'idle' && (
+            <motion.section
+              key="idle"
+              className={styles.hero}
+              initial={{ opacity: 0, y: 12 }}
+              animate={{ opacity: 1, y: 0 }}
+              exit={{ opacity: 0, y: -8 }}
+              transition={{ duration: 0.25 }}
             >
-              <img src={rat} alt="Rat" className={styles.ratGif} />
-              <h3 className={styles.emptyTitle}>Где PDF?</h3>
-              <p className={styles.emptyText}>
-                PDF появится здесь, как только вы загрузите изображение
-                <br />
-                и нажмёте кнопку &quot;Обработать&quot;
-                <br />
-                <br />
-                <span className={styles.emptyHint}>
-                  Пока можете полюбоваться на эту крысу 🐀
-                </span>
-              </p>
-            </motion.div>
-          )}
-
-          {imagePreview && !pdfUrl && (
-            <motion.div
-              key="preview"
-              className={styles.previewContainer}
-              initial={{ opacity: 0, scale: 0.95 }}
-              animate={{ opacity: 1, scale: 1 }}
-              exit={{ opacity: 0, scale: 0.95 }}
-            >
-              <h3 className={styles.previewTitle}>Предпросмотр изображения</h3>
-              <div className={styles.imageWrapper}>
-                <img
-                  src={imagePreview}
-                  alt="Preview"
-                  className={styles.previewImage}
-                />
-              </div>
-              {isProcessing && (
-                <div className={styles.processingOverlay}>
-                  <div className={styles.spinner}></div>
-                  <p>Обрабатываем изображение...</p>
+              <div
+                className={`${styles.dropZone} ${isDragging ? styles.dragging : ''}`}
+                onDrop={handleDrop}
+                onDragOver={handleDragOver}
+                onDragLeave={handleDragLeave}
+                onClick={handlePickClick}
+                role="button"
+                tabIndex={0}
+              >
+                <div className={styles.dropIcon}>📄</div>
+                <h1 className={styles.heroTitle}>Загрузите картинку</h1>
+                <p className={styles.heroText}>
+                  Перетащите файл сюда или кликните, чтобы выбрать
+                  <br />
+                  <span className={styles.heroHint}>
+                    PNG / JPG до {MAX_MB}MB
+                  </span>
+                </p>
+                <div className={styles.miniNote}>
+                  1 изображение → 1 PDF. Без лишних шагов.
                 </div>
-              )}
-            </motion.div>
+              </div>
+            </motion.section>
           )}
 
-          {pdfUrl && (
-            <motion.div
-              key="pdf"
-              className={styles.pdfContainer}
-              initial={{ opacity: 0, scale: 0.95 }}
+          {step !== 'idle' && step !== 'done' && (
+            <motion.section
+              key="preview"
+              className={styles.previewStage}
+              initial={{ opacity: 0, scale: 0.98 }}
               animate={{ opacity: 1, scale: 1 }}
-              exit={{ opacity: 0, scale: 0.95 }}
+              exit={{ opacity: 0, scale: 0.98 }}
+              transition={{ duration: 0.25 }}
             >
-              <div className={styles.pdfHeader}>
-                <h3 className={styles.previewTitle}>PDF готов!</h3>
-                {numPages > 0 && (
-                  <div className={styles.pdfControls}>
+              <div className={styles.card}>
+                <div className={styles.cardHeader}>
+                  <div>
+                    <h2 className={styles.cardTitle}>Предпросмотр</h2>
+                    <p className={styles.cardSub}>
+                      {selectedImage ? (
+                        <>
+                          <span className={styles.fileBadge}>
+                            📷 {selectedImage.name}
+                          </span>
+                          <span className={styles.dotSep}>•</span>
+                          <span className={styles.muted}>{readableSize}</span>
+                        </>
+                      ) : (
+                        <span className={styles.muted}>Выберите файл</span>
+                      )}
+                    </p>
+                  </div>
+
+                  <div className={styles.cardHeaderActions}>
                     <button
-                      onClick={previousPage}
-                      disabled={pageNumber <= 1}
-                      className={styles.pdfNavButton}
+                      className={styles.ghostButton}
+                      onClick={handlePickClick}
+                      disabled={step === 'processing'}
                     >
-                      ←
+                      Заменить
                     </button>
-                    <span className={styles.pageInfo}>
-                      {pageNumber} / {numPages}
-                    </span>
                     <button
-                      onClick={nextPage}
-                      disabled={pageNumber >= numPages}
-                      className={styles.pdfNavButton}
+                      className={styles.resetButton}
+                      onClick={resetAll}
+                      disabled={step === 'processing'}
                     >
-                      →
+                      Очистить
                     </button>
                   </div>
-                )}
-              </div>
-              <div className={styles.pdfViewerWrapper}>
-                <Document
-                  file={pdfUrl}
-                  onLoadSuccess={onDocumentLoadSuccess}
-                  className={styles.pdfDocument}
-                  loading={
-                    <div className={styles.pdfLoading}>
-                      <div className={styles.spinner}></div>
-                      <p>Загружаем PDF...</p>
+                </div>
+
+                <div className={styles.previewBody}>
+                  {imagePreview && (
+                    <div className={styles.imageFrame}>
+                      <img
+                        src={imagePreview}
+                        alt="Preview"
+                        className={styles.previewImage}
+                      />
                     </div>
-                  }
-                  error={
-                    <div className={styles.pdfError}>
-                      <p>Ошибка загрузки PDF</p>
-                      <button
-                        onClick={handleDownload}
-                        className={styles.downloadFallback}
-                      >
-                        Скачать PDF напрямую
-                      </button>
+                  )}
+
+                  {step === 'processing' && (
+                    <div className={styles.processingOverlay}>
+                      <div className={styles.spinner} />
+                      <div className={styles.processingText}>
+                        <div className={styles.processingTitle}>
+                          Обрабатываем…
+                        </div>
+                        <div className={styles.processingSub}>
+                          Обычно это занимает пару секунд
+                        </div>
+                      </div>
                     </div>
-                  }
-                >
-                  <Page
-                    pageNumber={pageNumber}
-                    className={styles.pdfPage}
-                    width={850}
-                  />
-                </Document>
+                  )}
+                </div>
+
+                <div className={styles.cardFooter}>
+                  <button
+                    className={styles.primaryButton}
+                    onClick={handleUpload}
+                    disabled={!selectedImage || step === 'processing'}
+                  >
+                    {step === 'processing'
+                      ? 'Ожидаем…'
+                      : 'Отправить и получить PDF'}
+                  </button>
+                  <div className={styles.footerHint}>
+                    После готовности PDF откроется на весь экран
+                  </div>
+                </div>
               </div>
-            </motion.div>
+            </motion.section>
+          )}
+
+          {step === 'done' && pdfUrl && (
+            <motion.section
+              key="pdf"
+              className={styles.pdfStage}
+              initial={{ opacity: 0, scale: 0.985 }}
+              animate={{ opacity: 1, scale: 1 }}
+              exit={{ opacity: 0, scale: 0.985 }}
+              transition={{ duration: 0.25 }}
+            >
+              <div className={styles.pdfShell}>
+                <div className={styles.pdfToolbar}>
+                  <div className={styles.pdfTitle}>
+                    <span className={styles.okDot} />
+                    PDF готов
+                  </div>
+
+                  <div className={styles.pdfTools}>
+                    {numPages > 0 && (
+                      <div className={styles.pager}>
+                        <button
+                          onClick={previousPage}
+                          disabled={pageNumber <= 1}
+                          className={styles.pdfNavButton}
+                          aria-label="Previous page"
+                        >
+                          ←
+                        </button>
+                        <span className={styles.pageInfo}>
+                          {pageNumber} / {numPages}
+                        </span>
+                        <button
+                          onClick={nextPage}
+                          disabled={pageNumber >= numPages}
+                          className={styles.pdfNavButton}
+                          aria-label="Next page"
+                        >
+                          →
+                        </button>
+                      </div>
+                    )}
+
+                    <button
+                      className={styles.ghostButton}
+                      onClick={handleDownload}
+                    >
+                      Скачать
+                    </button>
+                    <button className={styles.resetButton} onClick={resetAll}>
+                      Новая загрузка
+                    </button>
+                  </div>
+                </div>
+
+                <div className={styles.pdfViewport} ref={pdfViewportRef}>
+                  <Document
+                    file={pdfUrl}
+                    onLoadSuccess={onDocumentLoadSuccess}
+                    className={styles.pdfDocument}
+                    loading={
+                      <div className={styles.pdfLoading}>
+                        <div className={styles.spinner} />
+                        <p>Загружаем PDF…</p>
+                      </div>
+                    }
+                    error={
+                      <div className={styles.pdfError}>
+                        <p>Ошибка загрузки PDF</p>
+                        <button
+                          onClick={handleDownload}
+                          className={styles.primaryButton}
+                        >
+                          Скачать напрямую
+                        </button>
+                      </div>
+                    }
+                  >
+                    <Page
+                      pageNumber={pageNumber}
+                      className={styles.pdfPage}
+                      width={pdfWidth}
+                    />
+                  </Document>
+                </div>
+              </div>
+            </motion.section>
           )}
         </AnimatePresence>
       </main>
