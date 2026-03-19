@@ -1,43 +1,27 @@
-import { ApiError, AuthRequiredError } from './errors'
-import type { CockApi } from './client'
+import { api } from './axios';
+import type {
+    AuthUserUserLoginDTORequestBody,
+    CreateUserUserCreateDTORequestBody,
+    UserDTO,
+} from 'shared/api/generated/model';
 
-export class AuthManager {
-  private api: CockApi
-  private ttlMs: number
-  private cached: { ok: boolean; at: number } | null = null
+export async function loginRequest(data: AuthUserUserLoginDTORequestBody) {
+    const response = await api.post<UserDTO>('/auth/login', data);
+    return response.data;
+}
 
-  constructor(api: CockApi, ttlMs = 30_000) {
-    this.api = api
-    this.ttlMs = ttlMs
-  }
+export async function registerRequest(
+    data: CreateUserUserCreateDTORequestBody,
+) {
+    const response = await api.post<UserDTO>('/users/create', data);
+    return response.data;
+}
 
-  invalidate() {
-    this.cached = null
-  }
+export async function meRequest() {
+    const response = await api.get<UserDTO>('/auth/me');
+    return response.data;
+}
 
-  private isFresh() {
-    if (!this.cached) return false
-    return Date.now() - this.cached.at < this.ttlMs
-  }
-
-  async isAuthenticated(): Promise<boolean> {
-    if (this.isFresh()) return this.cached!.ok
-
-    try {
-      await this.api.me()
-      this.cached = { ok: true, at: Date.now() }
-      return true
-    } catch (e) {
-      if (e instanceof ApiError && (e.status === 401 || e.status === 403)) {
-        this.cached = { ok: false, at: Date.now() }
-        return false
-      }
-      throw e
-    }
-  }
-
-  async requireAuth(): Promise<void> {
-    const ok = await this.isAuthenticated()
-    if (!ok) throw new AuthRequiredError('Требуется авторизация')
-  }
+export async function logoutRequest() {
+    await api.post('/auth/logout');
 }

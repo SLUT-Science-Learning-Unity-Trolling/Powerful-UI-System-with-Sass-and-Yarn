@@ -1,0 +1,1040 @@
+{
+    "info": {
+        "title": "COCK API",
+        "version": "2.0.0",
+        "summary": "API для сервиса Chalkboard OCR Classification Kit",
+        "description": "\nГотовый к продакшену  OCR API\n\nОсобенности\n - PASETO токены\n - MongoDB основное хранилище данных\n - Чёрный список токенов и rate limit через Redis\n - Отдельные движки для распознавания формул и текста, переключаемые изменением одной строки кода\n",
+        "contact": { "name": "ProudRykar", "email": "proudrykar@mail.ru" },
+        "license": {
+            "name": "MIT License",
+            "url": "https://opensource.org/licenses/MIT"
+        }
+    },
+    "openapi": "3.1.0",
+    "servers": [{ "url": "/" }],
+    "paths": {
+        "/health/server": {
+            "get": {
+                "tags": ["Debug"],
+                "summary": "Проверка работы сервера",
+                "description": "Эндпоинт проверяет доступность сервера",
+                "operationId": "HealthServerServerHealthCheck",
+                "responses": {
+                    "200": { "description": "Сервер работает" },
+                    "500": {
+                        "description": "Сервер недоступен",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ErrorMeta"
+                                },
+                                "examples": {
+                                    "errormeta-example-1": {
+                                        "value": {
+                                            "type": "https://example.com/probs/service-connection-error",
+                                            "title": "Ошибка подключения к сервису",
+                                            "status": 500,
+                                            "detail": "Сервер не отвечает"
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
+                },
+                "deprecated": false
+            }
+        },
+        "/health/db": {
+            "get": {
+                "tags": ["Debug"],
+                "summary": "Проверка подключения к MongoDB",
+                "description": "Эндпоинт проверяет возможность подключения к MongoDB",
+                "operationId": "HealthDbDbHealthCheck",
+                "responses": {
+                    "200": { "description": "MongoDB подключена" },
+                    "500": {
+                        "description": "Ошибка подключения к MongoDB",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ErrorMeta"
+                                },
+                                "examples": {
+                                    "errormeta-example-1": {
+                                        "value": {
+                                            "type": "https://example.com/probs/service-connection-error",
+                                            "title": "Ошибка подключения к сервису",
+                                            "status": 500,
+                                            "detail": "Не удалось подключиться к MongoDB"
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
+                },
+                "deprecated": false
+            }
+        },
+        "/health/minio": {
+            "get": {
+                "tags": ["Debug"],
+                "summary": "Проверка подключения к MinIO",
+                "description": "Эндпоинт проверяет возможность подключения к MinIO",
+                "operationId": "HealthMinioMinioHealthCheck",
+                "responses": {
+                    "200": { "description": "MinIO подключен" },
+                    "500": {
+                        "description": "Ошибка подключения к MinIO",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ErrorMeta"
+                                },
+                                "examples": {
+                                    "errormeta-example-1": {
+                                        "value": {
+                                            "type": "https://example.com/probs/service-connection-error",
+                                            "title": "Ошибка подключения к сервису",
+                                            "status": 500,
+                                            "detail": "Не удалось подключиться к MinIO"
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
+                },
+                "deprecated": false
+            }
+        },
+        "/health/redis": {
+            "get": {
+                "tags": ["Debug"],
+                "summary": "Проверка подключения к Redis",
+                "description": "Эндпоинт проверяет возможность подключения к Redis",
+                "operationId": "HealthRedisRedisHealthCheck",
+                "responses": {
+                    "200": { "description": "Redis подключен" },
+                    "500": {
+                        "description": "Ошибка подключения к Redis",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ErrorMeta"
+                                },
+                                "examples": {
+                                    "errormeta-example-1": {
+                                        "value": {
+                                            "type": "https://example.com/probs/service-connection-error",
+                                            "title": "Ошибка подключения к сервису",
+                                            "status": 500,
+                                            "detail": "Не удалось подключиться к Redis"
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
+                },
+                "deprecated": false
+            }
+        },
+        "/health/all": {
+            "get": {
+                "tags": ["Debug"],
+                "summary": "Проверка подключения ко всем сервисам",
+                "description": "Эндпоинт проверяет возможность подключения ко всем сервисам (MongoDB, MinIO, Redis)",
+                "operationId": "HealthAllAllServicesHealthCheck",
+                "responses": {
+                    "200": { "description": "Все сервисы подключены" },
+                    "500": {
+                        "description": "Ошибка подключения к одному или нескольким сервисам",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ErrorMeta"
+                                },
+                                "examples": {
+                                    "errormeta-example-1": {
+                                        "value": {
+                                            "type": "https://example.com/probs/service-connection-error",
+                                            "title": "Ошибка подключения к сервису",
+                                            "status": 500,
+                                            "detail": "Не удалось подключиться к одному или нескольким сервисам"
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
+                },
+                "deprecated": false
+            }
+        },
+        "/health/metrics": {
+            "get": {
+                "tags": ["Debug"],
+                "summary": "Показать метрики Prometheus",
+                "description": "Эндпоинт возвращает метрики в формате Prometheus",
+                "operationId": "HealthMetricsMetricsHandler",
+                "responses": {
+                    "200": {
+                        "description": "Request fulfilled, document follows",
+                        "headers": {},
+                        "content": { "application/json": { "schema": {} } }
+                    }
+                },
+                "deprecated": false
+            }
+        },
+        "/health/metrics/json": {
+            "get": {
+                "tags": ["Debug"],
+                "summary": "Метрики Prometheus в JSON",
+                "description": "Возвращает метрики в удобочитаемом JSON для дебага",
+                "operationId": "HealthMetricsJsonMetricsJsonHandler",
+                "responses": {
+                    "200": {
+                        "description": "Request fulfilled, document follows",
+                        "headers": {},
+                        "content": { "application/json": { "schema": {} } }
+                    }
+                },
+                "deprecated": false
+            }
+        },
+        "/auth/login": {
+            "post": {
+                "tags": ["Auth"],
+                "summary": "Авторизация пользователя",
+                "description": "Эндпоинт для авторизации пользователя с установкой Paseto в cookie.Принимает email или username и пароль, возвращает данные пользователя и устанавливает access и refresh токены в cookie.",
+                "operationId": "AuthLoginAuthUser",
+                "requestBody": {
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "$ref": "#/components/schemas/AuthUserUserLoginDTORequestBody"
+                            }
+                        }
+                    },
+                    "required": true
+                },
+                "responses": {
+                    "200": {
+                        "description": "Пользователь авторизован",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/UserDTO"
+                                },
+                                "examples": {
+                                    "userdto-example-1": {
+                                        "value": {
+                                            "id": "694de2b36e5be2ab74f350e6",
+                                            "username": "User123",
+                                            "email": "user@example.com"
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    },
+                    "400": {
+                        "description": "Невалидные данные",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ErrorMeta"
+                                },
+                                "examples": {
+                                    "errormeta-example-1": {
+                                        "value": {
+                                            "type": "https://example.com/probs/validation-error",
+                                            "title": "Ошибка валидации данных",
+                                            "status": 400,
+                                            "detail": "Ошибка валидации данных"
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    },
+                    "401": {
+                        "description": "Неверные данные",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ErrorMeta"
+                                },
+                                "examples": {
+                                    "errormeta-example-1": {
+                                        "value": {
+                                            "type": "https://example.com/probs/authentication-error",
+                                            "title": "Ошибка аутентификации",
+                                            "status": 401,
+                                            "detail": "Неверная почта/логин или пароль"
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    },
+                    "500": {
+                        "description": "Внутренняя ошибка сервера",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ErrorMeta"
+                                },
+                                "examples": {
+                                    "errormeta-example-1": {
+                                        "value": {
+                                            "type": "https://example.com/probs/server-error",
+                                            "title": "Ошибка сервера",
+                                            "status": 500,
+                                            "detail": "Внутренняя ошибка сервера"
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    },
+                    "429": {
+                        "description": "Слишком много запросов",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ErrorMeta"
+                                },
+                                "examples": {
+                                    "errormeta-example-1": {
+                                        "value": {
+                                            "type": "https://example.com/probs/too-many-requests",
+                                            "title": "Превышен лимит запросов",
+                                            "status": 429,
+                                            "detail": "Слишком много попыток авторизации. Попробуйте позже."
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
+                },
+                "deprecated": false
+            }
+        },
+        "/auth/logout": {
+            "post": {
+                "tags": ["Auth"],
+                "summary": "Выход из профиля",
+                "description": "Эндпоинт выхода из профиля. Удаляет Paseto из cookie",
+                "operationId": "AuthLogoutLogoutUser",
+                "responses": {
+                    "200": {
+                        "description": "Пользователь успешно вышел из аккаунта"
+                    }
+                },
+                "deprecated": false
+            }
+        },
+        "/auth/refresh": {
+            "post": {
+                "tags": ["Auth"],
+                "summary": "Обновление access токена",
+                "description": "Эндпоинт обновляет access токен по refresh токену",
+                "operationId": "AuthRefreshRefreshUser",
+                "responses": {
+                    "200": { "description": "Токены успешно обновлены" },
+                    "401": {
+                        "description": "Невалидный refresh токен",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ErrorMeta"
+                                },
+                                "examples": {
+                                    "errormeta-example-1": {
+                                        "value": {
+                                            "type": "https://example.com/probs/authentication-error",
+                                            "title": "Ошибка аутентификации",
+                                            "status": 401,
+                                            "detail": "Невалидный или просроченный refresh токен"
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    },
+                    "429": {
+                        "description": "Слишком много попыток авторизации",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ErrorMeta"
+                                },
+                                "examples": {
+                                    "errormeta-example-1": {
+                                        "value": {
+                                            "type": "https://example.com/probs/too-many-requests",
+                                            "title": "Превышен лимит запросов",
+                                            "status": 429,
+                                            "detail": "Слишком много попыток обновления токенов. Попробуйте позже."
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
+                },
+                "deprecated": false
+            }
+        },
+        "/auth/me": {
+            "get": {
+                "tags": ["Debug", "Auth"],
+                "summary": "Данные текущего пользователя",
+                "description": "Эндпоинт возвращает данные текущего авторизованного пользователя",
+                "operationId": "AuthMeGetMe",
+                "responses": {
+                    "200": {
+                        "description": "Пользователь авторизован",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/UserDTO"
+                                },
+                                "examples": {
+                                    "userdto-example-1": {
+                                        "value": {
+                                            "id": "694de2b36e5be2ab74f350e6",
+                                            "username": "User123",
+                                            "email": "user@example.com"
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    },
+                    "401": {
+                        "description": "Пользователь не авторизован",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ErrorMeta"
+                                },
+                                "examples": {
+                                    "errormeta-example-1": {
+                                        "value": {
+                                            "type": "https://example.com/probs/authorization-error",
+                                            "title": "Ошибка авторизации",
+                                            "status": 403,
+                                            "detail": "Пользователь не авторизован или сессия истекла"
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    },
+                    "429": {
+                        "description": "Слишком много запросов",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ErrorMeta"
+                                },
+                                "examples": {
+                                    "errormeta-example-1": {
+                                        "value": {
+                                            "type": "https://example.com/probs/too-many-requests",
+                                            "title": "Превышен лимит запросов",
+                                            "status": 429,
+                                            "detail": "Слишком много попыток авторизации. Попробуйте позже."
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
+                },
+                "deprecated": false
+            }
+        },
+        "/users/create": {
+            "post": {
+                "tags": ["User"],
+                "summary": "Создание пользователя",
+                "description": "Эндпоинт регистрации нового пользователя.",
+                "operationId": "UsersCreateCreateUser",
+                "requestBody": {
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "$ref": "#/components/schemas/CreateUserUserCreateDTORequestBody"
+                            }
+                        }
+                    },
+                    "required": true
+                },
+                "responses": {
+                    "201": {
+                        "description": "Пользователь успешно создан",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/UserDTO"
+                                }
+                            }
+                        }
+                    },
+                    "400": {
+                        "description": "Ошибка валидации данных",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ErrorMeta"
+                                },
+                                "examples": {
+                                    "errormeta-example-1": {
+                                        "value": {
+                                            "type": "https://example.com/probs/validation-error",
+                                            "title": "Ошибка валидации данных",
+                                            "status": 400,
+                                            "detail": "Email уже используется или данные невалидны"
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    },
+                    "429": {
+                        "description": "Слишком много запросов",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ErrorMeta"
+                                },
+                                "examples": {
+                                    "errormeta-example-1": {
+                                        "value": {
+                                            "type": "https://example.com/probs/too-many-requests",
+                                            "title": "Превышен лимит запросов",
+                                            "status": 429,
+                                            "detail": "Слишком много попыток авторизации. Попробуйте позже."
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
+                },
+                "deprecated": false
+            }
+        },
+        "/users/upload_image": {
+            "post": {
+                "tags": ["User"],
+                "summary": "Загрузка изображения",
+                "description": "Загрузка изображения текущего пользователя.",
+                "operationId": "UsersUploadImageUploadImage",
+                "requestBody": {
+                    "content": {
+                        "multipart/form-data": {
+                            "schema": {
+                                "properties": {
+                                    "file": {
+                                        "type": "string",
+                                        "format": "binary",
+                                        "contentMediaType": "application/octet-stream"
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        }
+                    },
+                    "required": true
+                },
+                "responses": {
+                    "201": {
+                        "description": "Изображение успешно загружено",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ImageDTO"
+                                }
+                            }
+                        }
+                    },
+                    "400": {
+                        "description": "Ошибка загрузки изображения",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ErrorMeta"
+                                },
+                                "examples": {
+                                    "errormeta-example-1": {
+                                        "value": {
+                                            "type": "https://example.com/probs/image-upload-error",
+                                            "title": "Ошибка загрузки изображения",
+                                            "status": 400,
+                                            "detail": "Недопустимое расширение файла или ошибка загрузки"
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    },
+                    "401": {
+                        "description": "Пользователь не авторизован",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ErrorMeta"
+                                },
+                                "examples": {
+                                    "errormeta-example-1": {
+                                        "value": {
+                                            "type": "https://example.com/probs/authentication-error",
+                                            "title": "Ошибка аутентификации",
+                                            "status": 401,
+                                            "detail": "Пользователь не авторизован или сессия истекла"
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    },
+                    "429": {
+                        "description": "Слишком много запросов",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ErrorMeta"
+                                },
+                                "examples": {
+                                    "errormeta-example-1": {
+                                        "value": {
+                                            "type": "https://example.com/probs/too-many-requests",
+                                            "title": "Превышен лимит запросов",
+                                            "status": 429,
+                                            "detail": "Слишком много попыток авторизации. Попробуйте позже."
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
+                },
+                "deprecated": false
+            }
+        },
+        "/users/get_all_user_images": {
+            "get": {
+                "tags": ["User"],
+                "summary": "Получение всех изображений пользователя",
+                "description": "Возвращает список изображений текущего пользователя.",
+                "operationId": "UsersGetAllUserImagesGetAllUserImages",
+                "responses": {
+                    "200": {
+                        "description": "Список изображений пользователя",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ImageDTO"
+                                }
+                            }
+                        }
+                    },
+                    "401": {
+                        "description": "Пользователь не авторизован",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ErrorMeta"
+                                },
+                                "examples": {
+                                    "errormeta-example-1": {
+                                        "value": {
+                                            "type": "https://example.com/probs/authentication-error",
+                                            "title": "Ошибка аутентификации",
+                                            "status": 401,
+                                            "detail": "Пользователь не авторизован или сессия истекла"
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    },
+                    "429": {
+                        "description": "Слишком много запросов",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ErrorMeta"
+                                },
+                                "examples": {
+                                    "errormeta-example-1": {
+                                        "value": {
+                                            "type": "https://example.com/probs/too-many-requests",
+                                            "title": "Превышен лимит запросов",
+                                            "status": 429,
+                                            "detail": "Слишком много попыток авторизации. Попробуйте позже."
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
+                },
+                "deprecated": false
+            }
+        },
+        "/users/delete_image": {
+            "delete": {
+                "tags": ["User"],
+                "summary": "Удаление изображения",
+                "description": "Удаляет изображение текущего пользователя по URL.",
+                "operationId": "UsersDeleteImageDeleteImage",
+                "parameters": [
+                    {
+                        "name": "url",
+                        "in": "query",
+                        "schema": { "type": "string" },
+                        "required": true,
+                        "deprecated": false,
+                        "allowEmptyValue": false,
+                        "allowReserved": false
+                    }
+                ],
+                "responses": {
+                    "200": { "description": "Изображение успешно удалено" },
+                    "400": {
+                        "description": "Ошибка удаления изображения",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ErrorMeta"
+                                },
+                                "examples": {
+                                    "errormeta-example-1": {
+                                        "value": {
+                                            "type": "https://example.com/probs/image-deletion-error",
+                                            "title": "Ошибка удаления изображения",
+                                            "status": 400,
+                                            "detail": "Не удалось удалить изображение"
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    },
+                    "401": {
+                        "description": "Пользователь не авторизован",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ErrorMeta"
+                                },
+                                "examples": {
+                                    "errormeta-example-1": {
+                                        "value": {
+                                            "type": "https://example.com/probs/authentication-error",
+                                            "title": "Ошибка аутентификации",
+                                            "status": 401,
+                                            "detail": "Пользователь не авторизован или сессия истекла"
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    },
+                    "429": {
+                        "description": "Слишком много запросов",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ErrorMeta"
+                                },
+                                "examples": {
+                                    "errormeta-example-1": {
+                                        "value": {
+                                            "type": "https://example.com/probs/too-many-requests",
+                                            "title": "Превышен лимит запросов",
+                                            "status": 429,
+                                            "detail": "Слишком много попыток авторизации. Попробуйте позже."
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
+                },
+                "deprecated": false
+            }
+        },
+        "/users/ocr/pdf": {
+            "post": {
+                "tags": ["OCR"],
+                "summary": "OcrToPdf",
+                "operationId": "UsersOcrPdfOcrToPdf",
+                "requestBody": {
+                    "content": {
+                        "multipart/form-data": {
+                            "schema": {
+                                "properties": {
+                                    "files": {
+                                        "items": {
+                                            "type": "string",
+                                            "format": "binary",
+                                            "contentMediaType": "application/octet-stream"
+                                        },
+                                        "type": "array"
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        }
+                    },
+                    "required": true
+                },
+                "responses": {
+                    "200": {
+                        "description": "Файл успешно обработан и возвращен в виде PDF",
+                        "content": {
+                            "application/pdf": {
+                                "schema": {
+                                "type": "string",
+                                "format": "binary"
+                                }
+                            }
+                        }
+                    },
+                    "400": {
+                        "description": "Bad request syntax or unsupported method",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "status_code": { "type": "integer" },
+                                        "detail": { "type": "string" },
+                                        "extra": {
+                                            "additionalProperties": {},
+                                            "type": ["null", "object", "array"]
+                                        }
+                                    },
+                                    "type": "object",
+                                    "required": ["detail", "status_code"],
+                                    "description": "Validation Exception",
+                                    "examples": [
+                                        {
+                                            "status_code": 400,
+                                            "detail": "Bad Request",
+                                            "extra": {}
+                                        }
+                                    ]
+                                }
+                            }
+                        }
+                    },
+                    "401": {
+                        "description": "Пользователь не авторизован",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ErrorMeta"
+                                },
+                                "examples": {
+                                    "errormeta-example-1": {
+                                        "value": {
+                                            "type": "https://example.com/probs/authentication-error",
+                                            "title": "Ошибка аутентификации",
+                                            "status": 401,
+                                            "detail": "Пользователь не авторизован или сессия истекла"
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    },
+                    "415": {
+                        "description": "Неподдерживаемый формат изображения",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ErrorMeta"
+                                },
+                                "examples": {
+                                    "errormeta-example-1": {
+                                        "value": {
+                                            "type": "https://example.com/probs/unsupported-media-type",
+                                            "title": "Не поддерживаемый формат изображения",
+                                            "status": 415,
+                                            "detail": "Неподдерживаемый формат изображения"
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    },
+                    "429": {
+                        "description": "Слишком много запросов",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ErrorMeta"
+                                }
+                            }
+                        }
+                    },
+                    "500": {
+                        "description": "Внутренняя ошибка сервера",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ErrorMeta"
+                                }
+                            }
+                        }
+                    }
+                },
+                "deprecated": false
+            }
+        }
+    },
+    "components": {
+        "schemas": {
+            "AuthUserUserLoginDTORequestBody": {
+                "properties": {
+                    "identifier": { "type": "string" },
+                    "password": { "type": "string" }
+                },
+                "type": "object",
+                "required": ["identifier", "password"],
+                "title": "AuthUserUserLoginDTORequestBody"
+            },
+            "CreateUserUserCreateDTORequestBody": {
+                "properties": {
+                    "username": { "type": "string" },
+                    "email": { "type": "string" },
+                    "password": { "type": "string" },
+                    "repeat_password": { "type": "string" }
+                },
+                "type": "object",
+                "required": [
+                    "email",
+                    "password",
+                    "repeat_password",
+                    "username"
+                ],
+                "title": "CreateUserUserCreateDTORequestBody"
+            },
+            "CreateUserUserDTOResponseBody": {
+                "properties": {
+                    "id": { "type": "string" },
+                    "username": { "type": "string" },
+                    "email": { "type": "string" }
+                },
+                "type": "object",
+                "required": ["email", "id", "username"],
+                "title": "CreateUserUserDTOResponseBody"
+            },
+            "ErrorMeta": {
+                "properties": {
+                    "code": {
+                        "type": "string",
+                        "examples": ["DwEkQQHiBrmXZcSFtoJx"]
+                    },
+                    "title": {
+                        "type": "string",
+                        "examples": ["JIgNZYFcagWptUqCwdER"]
+                    },
+                    "status": { "type": "integer", "examples": [2562] }
+                },
+                "type": "object",
+                "required": ["code", "status", "title"],
+                "title": "ErrorMeta",
+                "examples": [
+                    {
+                        "code": "RYmbpFdWetXVhYOwZjsY",
+                        "title": "xJhBSnpIXjjOrlCcUmnv",
+                        "status": 2592
+                    }
+                ]
+            },
+            "GetAllUserImagesImageDTOResponseBody": {
+                "properties": {
+                    "id": { "type": "string" },
+                    "user_id": { "type": "string" },
+                    "url": { "type": "string" }
+                },
+                "type": "object",
+                "required": ["id", "url", "user_id"],
+                "title": "GetAllUserImagesImageDTOResponseBody"
+            },
+            "ImageDTO": {
+                "properties": {
+                    "id": {
+                        "type": "string",
+                        "examples": ["qMFojiePWlMXjDwYTakS"]
+                    },
+                    "user_id": {
+                        "type": "string",
+                        "examples": ["DBQNXqcJcDSuFiiFSZbV"]
+                    },
+                    "url": {
+                        "type": "string",
+                        "examples": ["AsuEshTKFLZjQQrDxkwh"]
+                    }
+                },
+                "type": "object",
+                "required": ["id", "url", "user_id"],
+                "title": "ImageDTO",
+                "examples": [
+                    {
+                        "id": "WjGDYPstccqXcjHsjXcF",
+                        "user_id": "wrkivNyOTjTEvAUueXgf",
+                        "url": "LqpHUrVGFBaiJKfHyEul"
+                    }
+                ]
+            },
+            "UploadImageImageDTOResponseBody": {
+                "properties": {
+                    "id": { "type": "string" },
+                    "user_id": { "type": "string" },
+                    "url": { "type": "string" }
+                },
+                "type": "object",
+                "required": ["id", "url", "user_id"],
+                "title": "UploadImageImageDTOResponseBody"
+            },
+            "UserDTO": {
+                "properties": {
+                    "id": {
+                        "type": "string",
+                        "examples": ["uTJmBVBFdzxuvECziwYv"]
+                    },
+                    "username": {
+                        "type": "string",
+                        "examples": ["baBcefxZzxwAxLUKwHVh"]
+                    },
+                    "email": {
+                        "type": "string",
+                        "examples": ["mGJHERyPYwSLUcVNYZoI"]
+                    }
+                },
+                "type": "object",
+                "required": ["email", "id", "username"],
+                "title": "UserDTO",
+                "examples": [
+                    {
+                        "id": "hEVjsekkeZUyMKBwICns",
+                        "username": "GGkFTTHdwecnxNGoKAAn",
+                        "email": "wrLzxyyJLPvPYZLdSRar"
+                    }
+                ]
+            }
+        }
+    }
+}

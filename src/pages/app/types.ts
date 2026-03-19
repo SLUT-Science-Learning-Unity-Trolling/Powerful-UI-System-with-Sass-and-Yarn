@@ -1,0 +1,1 @@
+export type AppStage = 'idle' | 'preview' | 'processing' | 'pdf' | 'error';

@@ -1,0 +1,1107 @@
+:root {
+    --topbar-h: 72px;
+    --topbar-gap: 14px;
+    --topbar-side: 10px;
+}
+
+.container {
+    height: 100vh;
+    height: 100dvh;
+    min-height: 0;
+    overflow: hidden;
+    background: #0a0a0a;
+    position: relative;
+    display: flex;
+    flex-direction: column;
+
+    &::before {
+        content: '';
+        position: absolute;
+        inset: 0;
+        background: repeating-linear-gradient(
+            45deg,
+            transparent,
+            transparent 20px,
+            rgba(26, 182, 169, 0.02) 20px,
+            rgba(26, 182, 169, 0.02) 21px
+        );
+        pointer-events: none;
+        z-index: 0;
+    }
+}
+
+.fileInput {
+    display: none;
+}
+
+.topBar {
+    position: fixed;
+    z-index: 5;
+    top: calc(env(safe-area-inset-top) + 10px);
+    left: var(--topbar-side);
+    right: var(--topbar-side);
+    height: var(--topbar-h);
+
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+
+    box-sizing: border-box;
+    padding: 14px 18px;
+
+    background: rgba(17, 18, 19, 0.75);
+    border: 1px solid #202020;
+    border-radius: 16px;
+    backdrop-filter: blur(10px);
+}
+
+.brand {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    user-select: none;
+    min-width: 0;
+}
+
+.brandDot {
+    width: 10px;
+    height: 10px;
+    border-radius: 999px;
+    background: #1ab6a9;
+    flex: 0 0 auto;
+}
+
+.brandText {
+    color: #ffffff;
+    font-family: 'Inter', sans-serif;
+    font-weight: 600;
+    font-size: 14px;
+    letter-spacing: 0.2px;
+}
+
+.topActions {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.main {
+    position: fixed;
+    z-index: 1;
+
+    left: 0;
+    right: 0;
+    bottom: 0;
+
+    top: calc(
+        env(safe-area-inset-top) + 10px + var(--topbar-h) + var(--topbar-gap)
+    );
+
+    min-height: 0;
+    overflow: hidden;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    padding: 0 var(--topbar-side) 10px var(--topbar-side);
+    box-sizing: border-box;
+}
+
+.dropLayer {
+    position: absolute;
+    inset: 0;
+    z-index: 1;
+}
+
+.dropLayerActive {
+    background: rgba(26, 182, 169, 0.06);
+}
+
+.hero,
+.previewStage,
+.pdfStage {
+    position: relative;
+    z-index: 2;
+    width: 100%;
+    height: 100%;
+    min-height: 0;
+    overflow: hidden;
+}
+
+.hero {
+    max-width: 980px;
+    padding: 12px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    min-height: 0;
+}
+
+.dropZone {
+    width: 100%;
+    border: 2px dashed #202020;
+    border-radius: 20px;
+    padding: 64px 28px;
+    text-align: center;
+    cursor: pointer;
+    transition: all 0.25s ease;
+    background: rgba(26, 182, 169, 0.02);
+    position: relative;
+    overflow: hidden;
+
+    &:hover {
+        border-color: #1ab6a9;
+        background: rgba(26, 182, 169, 0.05);
+        transform: translateY(-2px);
+    }
+}
+
+.dragging {
+    border-color: #1ab6a9;
+    background: rgba(26, 182, 169, 0.1);
+    transform: scale(1.01);
+}
+
+.dropIcon {
+    font-size: 56px;
+    margin-bottom: 14px;
+}
+
+.heroTitle {
+    margin: 0 0 10px 0;
+    color: #ffffff;
+    font-family: 'Inter', sans-serif;
+    font-weight: 700;
+    font-size: 30px;
+}
+
+.heroText {
+    margin: 0;
+    color: #8c8d90;
+    font-family: 'Montserrat', sans-serif;
+    font-size: 15px;
+    line-height: 1.6;
+}
+
+.heroHint {
+    color: #1ab6a9;
+    font-weight: 600;
+}
+
+.miniNote {
+    margin: 22px auto 0 auto;
+    display: inline-flex;
+    gap: 8px;
+    align-items: center;
+
+    padding: 10px 14px;
+    border-radius: 999px;
+    border: 1px solid #202020;
+    background: rgba(17, 18, 19, 0.6);
+
+    color: #8c8d90;
+    font-family: 'Montserrat', sans-serif;
+    font-size: 13px;
+}
+
+.previewStage {
+    max-width: 980px;
+    display: flex;
+    min-height: 0;
+    height: 100%;
+}
+
+.card {
+    width: 100%;
+    min-height: 0;
+
+    background: rgba(17, 18, 19, 0.82);
+    border: 1px solid #202020;
+    border-radius: 18px;
+    overflow: hidden;
+    backdrop-filter: blur(10px);
+
+    display: flex;
+    flex-direction: column;
+}
+
+.cardHeader {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    gap: 12px;
+    padding: 18px 18px 14px 18px;
+    border-bottom: 1px solid #202020;
+    flex: 0 0 auto;
+}
+
+.cardTitle {
+    margin: 0 0 6px 0;
+    color: #ffffff;
+    font-family: 'Inter', sans-serif;
+    font-weight: 700;
+    font-size: 18px;
+}
+
+.cardSub {
+    margin: 0;
+    color: #8c8d90;
+    font-family: 'Montserrat', sans-serif;
+    font-size: 13px;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    align-items: center;
+}
+
+.fileBadge {
+    display: inline-flex;
+    gap: 8px;
+    align-items: center;
+    padding: 6px 10px;
+    border-radius: 999px;
+    border: 1px solid rgba(26, 182, 169, 0.35);
+    background: rgba(26, 182, 169, 0.08);
+    color: #ffffff;
+}
+
+.dotSep {
+    opacity: 0.5;
+}
+
+.muted {
+    color: #8c8d90;
+}
+
+.cardHeaderActions {
+    display: flex;
+    gap: 10px;
+    align-items: center;
+    margin-top: 5px;
+}
+
+.previewBody {
+    position: relative;
+    padding: 18px;
+    background: rgba(10, 10, 10, 0.35);
+
+    flex: 1;
+    min-height: 0;
+    overflow: hidden;
+}
+
+.imageFrame {
+    border-radius: 14px;
+    border: 1px solid #202020;
+    background: #0a0a0a;
+    padding: 14px;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    min-height: 0;
+    height: clamp(320px, 55vh, 640px);
+    overflow: auto;
+    -webkit-overflow-scrolling: touch;
+}
+
+.previewImage {
+    max-width: 100%;
+    max-height: 100%;
+    width: auto;
+    height: auto;
+    border-radius: 10px;
+    object-fit: contain;
+    display: block;
+}
+
+.processingOverlay {
+    position: absolute;
+    inset: 0;
+    background: rgba(17, 18, 19, 0.92);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 14px;
+    padding: 18px;
+}
+
+.processingText {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+}
+
+.processingTitle {
+    color: #ffffff;
+    font-family: 'Inter', sans-serif;
+    font-weight: 700;
+    font-size: 16px;
+}
+
+.processingSub {
+    color: #8c8d90;
+    font-family: 'Montserrat', sans-serif;
+    font-size: 13px;
+}
+
+.cardFooter {
+    padding: 16px 18px 18px 18px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+    border-top: 1px solid #202020;
+    flex: 0 0 auto;
+}
+
+.footerHint {
+    width: 100%;
+    text-align: center;
+    color: #8c8d90;
+    font-family: 'Montserrat', sans-serif;
+    font-size: 13px;
+}
+
+.primaryButton {
+    padding: 12px 18px;
+    background: #1ab6a9;
+    border: none;
+    border-radius: 10px;
+    color: #000000;
+    font-family: 'Montserrat', sans-serif;
+    font-weight: 650;
+    font-size: 14px;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    text-decoration: none;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+
+    &:hover:not(:disabled) {
+        background: #18a599;
+        transform: translateY(-2px);
+    }
+
+    &:active:not(:disabled) {
+        background: #169085;
+        transform: translateY(0);
+    }
+
+    &:disabled {
+        background: #8c8d90;
+        cursor: not-allowed;
+        opacity: 0.45;
+    }
+}
+
+.ghostButton {
+    padding: 11px 14px;
+    background: rgba(26, 182, 169, 0.1);
+    border: 1px solid rgba(26, 182, 169, 0.45);
+    border-radius: 10px;
+    color: #1ab6a9;
+    font-family: 'Montserrat', sans-serif;
+    font-weight: 700;
+    font-size: 13px;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    text-decoration: none;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+
+    &:hover:not(:disabled) {
+        background: rgba(26, 182, 169, 0.18);
+        transform: translateY(-2px);
+    }
+
+    &:disabled {
+        opacity: 0.35;
+        cursor: not-allowed;
+    }
+}
+
+.resetButton {
+    padding: 11px 14px;
+    background: transparent;
+    border: 1px solid #202020;
+    border-radius: 10px;
+    color: #8c8d90;
+    font-family: 'Montserrat', sans-serif;
+    font-weight: 600;
+    font-size: 13px;
+    cursor: pointer;
+    transition: all 0.2s ease;
+
+    &:hover:not(:disabled) {
+        border-color: #2a2a2a;
+        color: #ffffff;
+        transform: translateY(-2px);
+    }
+
+    &:disabled {
+        opacity: 0.35;
+        cursor: not-allowed;
+    }
+}
+
+.spinner {
+    width: 46px;
+    height: 46px;
+    border: 4px solid rgba(26, 182, 169, 0.2);
+    border-top-color: #1ab6a9;
+    border-radius: 50%;
+    animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+    to {
+        transform: rotate(360deg);
+    }
+}
+
+.pdfStage {
+    height: 100%;
+    min-height: 0;
+    display: flex;
+}
+
+.pdfShell {
+    height: 100%;
+    min-height: 0;
+    width: 100%;
+    max-width: 1200px;
+    margin: 0 auto;
+
+    background: rgba(17, 18, 19, 0.82);
+    border: 1px solid #202020;
+    border-radius: 18px;
+    overflow: hidden;
+    backdrop-filter: blur(10px);
+
+    display: flex;
+    flex-direction: column;
+}
+
+.pdfToolbar {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+
+    padding: 14px 16px;
+    border-bottom: 1px solid #202020;
+    flex: 0 0 auto;
+}
+
+.pdfTitle {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+
+    color: #ffffff;
+    font-family: 'Inter', sans-serif;
+    font-weight: 800;
+    font-size: 14px;
+}
+
+.okDot {
+    width: 10px;
+    height: 10px;
+    border-radius: 999px;
+    background: #1ab6a9;
+}
+
+.pdfTools {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.pager {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding-right: 6px;
+    border-right: 1px solid #202020;
+    margin-right: 6px;
+}
+
+.pdfNavButton {
+    background: rgba(26, 182, 169, 0.12);
+    border: 1px solid rgba(26, 182, 169, 0.5);
+    border-radius: 8px;
+    color: #1ab6a9;
+    font-size: 18px;
+    width: 38px;
+    height: 38px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    transition: all 0.2s ease;
+
+    &:hover:not(:disabled) {
+        background: rgba(26, 182, 169, 0.2);
+        transform: translateY(-2px);
+    }
+
+    &:disabled {
+        opacity: 0.28;
+        cursor: not-allowed;
+    }
+}
+
+.pageInfo {
+    color: #8c8d90;
+    font-size: 13px;
+    font-family: 'Montserrat', sans-serif;
+    font-weight: 700;
+    min-width: 70px;
+    text-align: center;
+}
+
+.pdfViewport {
+    flex: 1;
+    min-height: 0;
+    overflow: auto;
+    background: #0a0a0a;
+    padding: 18px;
+    display: flex;
+    justify-content: center;
+    -webkit-overflow-scrolling: touch;
+}
+
+.pdfDocument {
+    display: flex;
+    justify-content: center;
+}
+
+.pdfPage {
+    canvas {
+        border-radius: 12px;
+        box-shadow: 0 6px 18px rgba(0, 0, 0, 0.35);
+        max-width: 100%;
+        height: auto !important;
+    }
+}
+
+.pdfLoading,
+.pdfError {
+    min-height: 360px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 14px;
+
+    p {
+        margin: 0;
+        color: #8c8d90;
+        font-size: 14px;
+        font-family: 'Montserrat', sans-serif;
+    }
+}
+
+@media (hover: none) and (pointer: coarse) {
+    .primaryButton,
+    .ghostButton,
+    .resetButton {
+        min-height: 44px;
+    }
+}
+
+@media (max-width: 768px) {
+    :root {
+        --topbar-h: 118px;
+        --topbar-gap: 12px;
+        --topbar-side: 8px;
+    }
+
+    .topBar {
+        padding: 12px 12px;
+        border-radius: 14px;
+        flex-direction: column;
+        align-items: stretch;
+        justify-content: center;
+        gap: 10px;
+    }
+
+    .topActions {
+        width: 100%;
+    }
+
+    .ghostButton {
+        width: 100%;
+    }
+
+    .dropZone {
+        padding: 44px 18px;
+        border-radius: 16px;
+    }
+
+    .heroTitle {
+        font-size: 24px;
+    }
+
+    .cardHeader {
+        flex-direction: column;
+        align-items: flex-start;
+    }
+
+    .cardHeaderActions {
+        width: 100%;
+        justify-content: flex-start;
+        flex-wrap: wrap;
+    }
+
+    .cardFooter {
+        flex-direction: column;
+        align-items: stretch;
+    }
+
+    .footerHint {
+        text-align: center;
+    }
+
+    .pdfToolbar {
+        flex-direction: column;
+        align-items: stretch;
+    }
+
+    .pdfTools {
+        justify-content: space-between;
+        flex-wrap: wrap;
+    }
+
+    .pager {
+        border-right: none;
+        margin-right: 0;
+        padding-right: 0;
+    }
+
+    .imageFrame {
+        height: clamp(260px, 52vh, 520px);
+    }
+
+    .pdfViewport {
+        padding: 12px;
+    }
+}
+
+@media (max-width: 360px) {
+    :root {
+        --topbar-h: 126px;
+        --topbar-gap: 10px;
+        --topbar-side: 6px;
+    }
+
+    .dropZone {
+        padding: 40px 16px;
+    }
+
+    .heroTitle {
+        font-size: 22px;
+    }
+
+    .pdfNavButton {
+        width: 36px;
+        height: 36px;
+    }
+
+    .pageInfo {
+        min-width: 62px;
+    }
+}
+
+.previewList {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    margin: 0;
+    padding: 0;
+    list-style: none;
+    min-height: 0;
+    max-height: 100%;
+    overflow: auto;
+}
+
+.previewListItem {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    padding: 12px;
+    border: 1px solid #202020;
+    border-radius: 14px;
+    background: rgba(10, 10, 10, 0.7);
+    cursor: grab;
+}
+
+.previewThumbWrap {
+    width: 88px;
+    height: 88px;
+    flex: 0 0 88px;
+    border-radius: 10px;
+    overflow: hidden;
+    border: 1px solid #202020;
+    background: #0a0a0a;
+}
+
+.previewThumb {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    display: block;
+}
+
+.previewMeta {
+    min-width: 0;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    flex: 1;
+}
+
+.previewIndex {
+    width: 32px;
+    height: 32px;
+    border-radius: 999px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    background: rgba(26, 182, 169, 0.12);
+    border: 1px solid rgba(26, 182, 169, 0.35);
+    color: #1ab6a9;
+    font-family: 'Inter', sans-serif;
+    font-weight: 800;
+    font-size: 13px;
+    flex: 0 0 auto;
+}
+
+.previewTextBlock {
+    min-width: 0;
+}
+
+.previewName {
+    margin: 0 0 4px 0;
+    color: #ffffff;
+    font-family: 'Inter', sans-serif;
+    font-size: 14px;
+    font-weight: 600;
+    word-break: break-word;
+}
+
+.previewInfo {
+    margin: 0;
+    color: #8c8d90;
+    font-family: 'Montserrat', sans-serif;
+    font-size: 12px;
+}
+
+.previewItemActions {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    flex: 0 0 auto;
+}
+
+@media (max-width: 768px) {
+    .previewListItem {
+        align-items: flex-start;
+        flex-direction: column;
+    }
+
+    .previewThumbWrap {
+        width: 100%;
+        height: 180px;
+        flex-basis: auto;
+    }
+
+    .previewMeta {
+        width: 100%;
+    }
+
+    .previewItemActions {
+        width: 100%;
+        justify-content: flex-end;
+    }
+}
+
+.previewStage {
+    max-width: 980px;
+    display: flex;
+    min-height: 0;
+    height: 100%;
+    width: 100%;
+}
+
+.card {
+    width: 100%;
+    min-height: 0;
+    height: 100%;
+    background: rgba(17, 18, 19, 0.82);
+    border: 1px solid #202020;
+    border-radius: 18px;
+    overflow: hidden;
+    backdrop-filter: blur(10px);
+    display: flex;
+    flex-direction: column;
+}
+
+.previewBody {
+    position: relative;
+    padding: 18px;
+    background: rgba(10, 10, 10, 0.35);
+    flex: 1 1 auto;
+    min-height: 0;
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+}
+
+.previewList {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    margin: 0;
+    padding: 0;
+    list-style: none;
+    flex: 1 1 auto;
+    min-height: 0;
+    max-height: 100%;
+    overflow-y: auto;
+    overflow-x: hidden;
+    padding-right: 2px;
+}
+
+.previewListItem {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    padding: 12px;
+    border: 1px solid #202020;
+    border-radius: 14px;
+    background: rgba(10, 10, 10, 0.7);
+    cursor: grab;
+    width: 100%;
+    min-width: 0;
+    box-sizing: border-box;
+}
+
+.previewMeta {
+    min-width: 0;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    flex: 1 1 auto;
+    overflow: hidden;
+}
+
+.previewTextBlock {
+    min-width: 0;
+    overflow: hidden;
+}
+
+.previewName {
+    margin: 0 0 4px 0;
+    color: #ffffff;
+    font-family: 'Inter', sans-serif;
+    font-size: 14px;
+    font-weight: 600;
+    word-break: break-word;
+}
+
+.previewInfo {
+    margin: 0;
+    color: #8c8d90;
+    font-family: 'Montserrat', sans-serif;
+    font-size: 12px;
+}
+
+.previewItemActions {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    flex: 0 0 auto;
+}
+
+.previewDropLayer {
+    position: absolute;
+    inset: 18px;
+    z-index: 3;
+    pointer-events: none;
+    border-radius: 14px;
+    border: 2px dashed transparent;
+    background: transparent;
+    opacity: 0;
+    transition: all 0.2s ease;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.previewDropLayerActive {
+    opacity: 1;
+    border-color: #1ab6a9;
+    background: rgba(26, 182, 169, 0.08);
+}
+
+.previewDropText {
+    padding: 12px 16px;
+    border-radius: 999px;
+    background: rgba(17, 18, 19, 0.92);
+    border: 1px solid rgba(26, 182, 169, 0.35);
+    color: #ffffff;
+    font-family: 'Montserrat', sans-serif;
+    font-size: 13px;
+    font-weight: 600;
+}
+
+@media (max-width: 768px) {
+    .previewListItem {
+        align-items: flex-start;
+        flex-direction: column;
+    }
+
+    .previewThumbWrap {
+        width: 100%;
+        height: 180px;
+        flex-basis: auto;
+    }
+
+    .previewMeta {
+        width: 100%;
+    }
+
+    .previewItemActions {
+        width: 100%;
+        justify-content: flex-end;
+    }
+}
+
+.previewContent {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) 320px;
+    gap: 16px;
+    flex: 1 1 auto;
+    min-height: 0;
+    overflow: hidden;
+}
+
+.previewList {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    margin: 0;
+    padding: 0;
+    list-style: none;
+    flex: 1 1 auto;
+    min-height: 0;
+    max-height: 100%;
+    overflow-y: auto;
+    overflow-x: hidden;
+    padding-right: 2px;
+}
+
+.previewThumbWrap {
+    width: 88px;
+    height: 88px;
+    flex: 0 0 88px;
+    border-radius: 10px;
+    overflow: hidden;
+    border: 1px solid #202020;
+    background: #0a0a0a;
+    padding: 0;
+    cursor: pointer;
+    display: block;
+}
+
+.hoverPreviewPane {
+    min-width: 0;
+    min-height: 0;
+    height: 100%;
+    display: flex;
+    align-items: stretch;
+}
+
+.hoverPreviewCard {
+    width: 100%;
+    min-height: 0;
+    display: flex;
+    flex-direction: column;
+    border: 1px solid #202020;
+    border-radius: 14px;
+    background: rgba(10, 10, 10, 0.7);
+    overflow: hidden;
+}
+
+.hoverPreviewImageWrap {
+    flex: 1 1 auto;
+    min-height: 0;
+    background: #0a0a0a;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 12px;
+}
+
+.hoverPreviewImage {
+    max-width: 100%;
+    max-height: 100%;
+    width: auto;
+    height: auto;
+    object-fit: contain;
+    display: block;
+    border-radius: 10px;
+}
+
+.hoverPreviewMeta {
+    padding: 12px 14px;
+    border-top: 1px solid #202020;
+}
+
+.hoverPreviewName {
+    margin: 0 0 6px 0;
+    color: #ffffff;
+    font-family: 'Inter', sans-serif;
+    font-size: 13px;
+    font-weight: 600;
+    word-break: break-word;
+}
+
+.hoverPreviewInfo {
+    margin: 0;
+    color: #8c8d90;
+    font-family: 'Montserrat', sans-serif;
+    font-size: 12px;
+}
+
+.hoverPreviewEmpty {
+    width: 100%;
+    border: 1px dashed #202020;
+    border-radius: 14px;
+    background: rgba(10, 10, 10, 0.35);
+    color: #8c8d90;
+    font-family: 'Montserrat', sans-serif;
+    font-size: 13px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+    padding: 18px;
+}
+
+@media (max-width: 1024px) {
+    .previewContent {
+        grid-template-columns: minmax(0, 1fr);
+    }
+
+    .hoverPreviewPane {
+        display: none;
+    }
+}
